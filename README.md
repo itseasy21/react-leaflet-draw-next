@@ -1,11 +1,12 @@
-# React-Leaflet-Draw
+# React-Leaflet-Draw-Next
 
-React component build on top of [React-Leaflet](https://github.com/PaulLeCam/react-leaflet) that integrate [leaflet-draw](https://github.com/Leaflet/Leaflet.draw) feature.
+React component built on top of [React-Leaflet](https://github.com/PaulLeCam/react-leaflet) that integrates [leaflet-draw](https://github.com/Leaflet/Leaflet.draw) features. This is the next-generation extension: **react-leaflet-draw-next**.
 
 ## Install
 
+
 ```
-npm install react-leaflet-draw
+npm install react-leaflet-draw-next
 ```
 
 ## Getting started
@@ -33,7 +34,7 @@ The elements you draw will be added to this FeatureGroup layer, when you hit edi
 
 ```jsx
 import { Map, TileLayer, FeatureGroup, Circle } from 'react-leaflet';
-import { EditControl } from "react-leaflet-draw"
+import { EditControl } from "react-leaflet-draw-next"
 
 const Component = () => (
   <FeatureGroup>
@@ -59,7 +60,7 @@ You can pass more options on draw object, this informations can be found [here](
 
 # Project Background & Extension
 
-This repository is an extension of the original [react-leaflet-draw](https://github.com/alex3165/react-leaflet-draw) by @alex3165, adding more features, modern support, and ongoing improvements for future React and Leaflet versions.
+This repository is an extension of the original [react-leaflet-draw](https://github.com/alex3165/react-leaflet-draw) by @alex3165, adding more features, modern support, and ongoing improvements for future React and Leaflet versions. The package name is now **react-leaflet-draw-next** to reflect its next-generation status.
 
 It aims to provide a robust, actively maintained drawing/editing solution for React-Leaflet maps, with enhanced API, better TypeScript support, and community-driven features.
 
@@ -103,19 +104,19 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 |draw            |object <DrawOptions>        |enable/disable draw controls                          |
 |edit            |object <EditPolyOptions>    |enable/disable edit controls                          |
 |onEdited        |function                    |hook to leaflet-draw's `draw:edited` event            |
-|onCreated       |function                    |hook to leaflet-draw's `draw:created` event           |
-|onDeleted       |function                    |hook to leaflet-draw's `draw:deleted` event           |
-|onMounted       |function                    |hook to leaflet-draw's `draw:mounted` event           |
-|onEditStart     |function                    |hook to leaflet-draw's `draw:editstart` event         |
-|onEditStop      |function                    |hook to leaflet-draw's `draw:editstop` event          |
-|onDeleteStart   |function                    |hook to leaflet-draw's `draw:deletestart` event       |
-|onDeleteStop    |function                    |hook to leaflet-draw's `draw:deletestop` event        |
-|onDrawStart     |function                    |hook to leaflet-draw's `draw:drawstart` event         |
-|onDrawStop      |function                    |hook to leaflet-draw's `draw:drawstop` event          |
-|onDrawVertex    |function                    |hook to leaflet-draw's `draw:drawvertex` event        |
-|onEditMove      |function                    |hook to leaflet-draw's `draw:editmove` event          |
-|onEditResize    |function                    |hook to leaflet-draw's `draw:editresize` event          |
-|onEditVertex    |function                    |hook to leaflet-draw's `draw:editvertex` event          |
+|onCreated       |function                    |hook to leaflet-draw-next's `draw:created` event           |
+|onDeleted       |function                    |hook to leaflet-draw-next's `draw:deleted` event           |
+|onMounted       |function                    |hook to leaflet-draw-next's `draw:mounted` event           |
+|onEditStart     |function                    |hook to leaflet-draw-next's `draw:editstart` event         |
+|onEditStop      |function                    |hook to leaflet-draw-next's `draw:editstop` event          |
+|onDeleteStart   |function                    |hook to leaflet-draw-next's `draw:deletestart` event       |
+|onDeleteStop    |function                    |hook to leaflet-draw-next's `draw:deletestop` event        |
+|onDrawStart     |function                    |hook to leaflet-draw-next's `draw:drawstart` event         |
+|onDrawStop      |function                    |hook to leaflet-draw-next's `draw:drawstop` event          |
+|onDrawVertex    |function                    |hook to leaflet-draw-next's `draw:drawvertex` event        |
+|onEditMove      |function                    |hook to leaflet-draw-next's `draw:editmove` event          |
+|onEditResize    |function                    |hook to leaflet-draw-next's `draw:editresize` event          |
+|onEditVertex    |function                    |hook to leaflet-draw-next's `draw:editvertex` event          |
 
 #### Links to docs
 
