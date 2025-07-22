@@ -26,27 +26,29 @@ function EditControl(props) {
   const drawRef = useRef();
   const propsRef = useRef(props);
 
-  const onDrawCreate = (e) => {
+  function onDrawCreate(e) {
     const { onCreated } = props;
     const container = context.layerContainer || context.map;
     container.addLayer(e.layer);
     onCreated && onCreated(e);
-  };
+  }
 
   React.useEffect(() => {
     const { map } = context;
     const { onMounted } = props;
 
     for (const key in eventHandlers) {
-      map.on(eventHandlers[key], (evt) => {
-        let handlers = Object.keys(eventHandlers).filter(
-          (handler) => eventHandlers[handler] === evt.type
-        );
-        if (handlers.length === 1) {
-          let handler = handlers[0];
-          props[handler] && props[handler](evt);
-        }
-      });
+      if (Object.prototype.hasOwnProperty.call(eventHandlers, key)) {
+        map.on(eventHandlers[key], (evt) => {
+          let handlers = Object.keys(eventHandlers).filter(
+            (handler) => eventHandlers[handler] === evt.type
+          );
+          if (handlers.length === 1) {
+            let handler = handlers[0];
+            props[handler] && props[handler](evt);
+          }
+        });
+      }
     }
     map.on(leaflet.Draw.Event.CREATED, onDrawCreate);
     drawRef.current = createDrawElement(props, context);
@@ -72,7 +74,7 @@ function EditControl(props) {
       isEqual(props.edit, propsRef.current.edit) &&
       props.position === propsRef.current.position
     ) {
-      return;
+      return undefined;
     }
     const { map } = context;
 
@@ -84,7 +86,9 @@ function EditControl(props) {
     onMounted && onMounted(drawRef.current);
 
     return () => {
-      drawRef.current.remove(map);
+      if (drawRef.current) {
+        drawRef.current.remove(map);
+      }
     };
   }, [
     props.draw, 
