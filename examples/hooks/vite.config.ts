@@ -1,13 +1,10 @@
-/* eslint-disable import/no-extraneous-dependencies */
+import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
-import { defineConfig } from 'vite';
-
-export default defineConfig(() => ({
+export default defineConfig({
   build: {
-    target: ['safari11.1', 'chrome64', 'firefox66', 'edge88'],
+    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
     outDir: resolve(__dirname, './dist'),
-    input: { main: resolve(__dirname, 'index.html') },
     assetsDir: '',
     emptyOutDir: true,
   },
@@ -16,4 +13,21 @@ export default defineConfig(() => ({
     open: true,
     port: 8002,
   },
-}));
+  optimizeDeps: {
+    include: ['leaflet', 'react-leaflet'],
+    exclude: ['leaflet-draw']
+  },
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+    alias: {
+      react: resolve(__dirname, '../../node_modules/react'),
+      'react-dom': resolve(__dirname, '../../node_modules/react-dom'),
+    }
+  },
+  define: {
+    global: 'globalThis',
+  },
+  esbuild: {
+    target: 'es2020'
+  }
+});

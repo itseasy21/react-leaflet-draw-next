@@ -1,7 +1,7 @@
 import { PropTypes } from 'prop-types';
-import Draw from 'leaflet-draw'; // eslint-disable-line
+import 'leaflet-draw'; // eslint-disable-line
 import isEqual from 'fast-deep-equal';
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useLeafletContext } from '@react-leaflet/core';
 
 import leaflet, { Map, Control } from 'leaflet';
@@ -22,51 +22,92 @@ const eventHandlers = {
 };
 
 function EditControl(props) {
-  const context = useLeafletContext();
+  // Enhanced context safety for React 19
+  let context;
+  try {
+    context = useLeafletContext();
+  } catch (error) {
+    // Fallback for when context is not available
+    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+      console.error('EditControl must be used within a MapContainer:', error);
+    }
+    return null; // Gracefully return null instead of throwing
+  }
+
+  if (!context || !context.map) {
+    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+      console.warn('EditControl: MapContainer context not ready');
+    }
+    return null;
+  }
+
   const drawRef = useRef();
   const propsRef = useRef(props);
 
+  // Memoize the onDrawCreate callback to prevent unnecessary re-renders
   function onDrawCreate(e) {
     const { onCreated } = props;
-    const container = context.layerContainer || context.map;
-    container.addLayer(e.layer);
+    if (context && (context.layerContainer || context.map)) {
+      const container = context.layerContainer || context.map;
+      container.addLayer(e.layer);
+    }
     onCreated && onCreated(e);
   }
 
+  // Memoize event handler setup for React 19 strict mode compatibility
+  const eventHandlerKeys = useMemo(() => Object.keys(eventHandlers), []);
+
   React.useEffect(() => {
+    if (!context || !context.map) {
+      return;
+    }
+
     const { map } = context;
     const { onMounted } = props;
 
-    for (const key in eventHandlers) {
+    // Set up event handlers with proper cleanup tracking
+    const eventCleanupFunctions = [];
+
+    eventHandlerKeys.forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(eventHandlers, key)) {
-        map.on(eventHandlers[key], (evt) => {
-          let handlers = Object.keys(eventHandlers).filter(
+        function eventHandler(evt) {
+          const handlers = eventHandlerKeys.filter(
             (handler) => eventHandlers[handler] === evt.type
           );
           if (handlers.length === 1) {
-            let handler = handlers[0];
+            const handler = handlers[0];
             props[handler] && props[handler](evt);
           }
-        });
+        }
+        
+        map.on(eventHandlers[key], eventHandler);
+        eventCleanupFunctions.push(() => map.off(eventHandlers[key], eventHandler));
       }
-    }
+    });
+
     map.on(leaflet.Draw.Event.CREATED, onDrawCreate);
+    eventCleanupFunctions.push(() => map.off(leaflet.Draw.Event.CREATED, onDrawCreate));
+
     drawRef.current = createDrawElement(props, context);
     map.addControl(drawRef.current);
     onMounted && onMounted(drawRef.current);
 
     return () => {
-      map.off(leaflet.Draw.Event.CREATED, onDrawCreate);
-
-      for (const key in eventHandlers) {
-        if (props[key]) {
-          map.off(eventHandlers[key], props[key]);
+      // Clean up all event listeners
+      eventCleanupFunctions.forEach(cleanup => cleanup());
+      
+      // Remove draw control safely
+      if (drawRef.current && map) {
+        try {
+          drawRef.current.remove(map);
+        } catch (removeError) {
+          if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+            console.warn('Error removing draw control:', removeError);
+          }
         }
       }
-
-      drawRef.current.remove(map);
     };
-  }, [props.onCreated, props.onDeleted, props.onEdited]);
+  }, [onDrawCreate, context, eventHandlerKeys, props.onMounted]);
 
   React.useEffect(() => {
     if (
@@ -74,29 +115,52 @@ function EditControl(props) {
       isEqual(props.edit, propsRef.current.edit) &&
       props.position === propsRef.current.position
     ) {
-      return undefined;
+      return;
     }
+
+    if (!context || !context.map) {
+      return;
+    }
+
     const { map } = context;
 
-    drawRef.current.remove(map);
+    // Safely remove existing control
+    if (drawRef.current) {
+      try {
+        drawRef.current.remove(map);
+      } catch (removeError) {
+        if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+          console.warn('Error removing existing draw control:', removeError);
+        }
+      }
+    }
+
     drawRef.current = createDrawElement(props, context);
     drawRef.current.addTo(map);
 
     const { onMounted } = props;
     onMounted && onMounted(drawRef.current);
 
+    // Update props ref for next comparison
+    propsRef.current = props;
+
     return () => {
-      if (drawRef.current) {
-        drawRef.current.remove(map);
+      if (drawRef.current && map) {
+        try {
+          drawRef.current.remove(map);
+        } catch (removeError) {
+          if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+            console.warn('Error removing draw control on cleanup:', removeError);
+          }
+        }
       }
     };
   }, [
     props.draw, 
     props.edit, 
     props.position, 
-    props.onCreated,
-    props.onDeleted,
-    props.onEdited
+    props.onMounted,
+    context
   ]);
 
   return null;
@@ -136,6 +200,7 @@ EditControl.propTypes = {
     rectangle: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
     circle: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
     marker: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+    circlemarker: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   }),
   edit: PropTypes.shape({
     edit: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),

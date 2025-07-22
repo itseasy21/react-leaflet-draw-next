@@ -3,6 +3,7 @@ import * as L from 'leaflet';
 import { FeatureGroup } from 'react-leaflet';
 import { EditControl } from '../../src';
 import type { FeatureCollection } from 'geojson';
+import 'leaflet-draw';
 
 interface Props {
   geojson: FeatureCollection;
