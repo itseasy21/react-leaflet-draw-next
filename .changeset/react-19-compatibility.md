@@ -46,7 +46,7 @@ No breaking changes to the public API. All existing code should continue to work
 - Better cleanup procedures for React 19 strict mode compatibility
 
 ## Impact
-This release resolves the critical React 19 compatibility issue that was preventing applications from upgrading to React 19 while using react-leaflet-draw.
+This release resolves the critical React 19 compatibility issue that was preventing applications from upgrading to React 19 while using react-leaflet-draw-next.
 
 ## Testing
 - ✅ React 19.1.0 compatibility
