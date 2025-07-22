@@ -10,7 +10,7 @@
     "build:umd": "webpack ./src/index.js --output-filename react-leaflet-draw.js",
     "build:umd:min": "webpack ./src/index.js --output-filename react-leaflet-draw.min.js",
     "build:esm": "babel src --out-dir dist/esm",
-    "build": " npm run build:dist",
+    "build": "npm run build:dist",
     "prepublish": "npm run build",
     "version": "npm run build",
     "postversion": "git push && git push --tags",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/alex3165/react-leaflet-draw.git"
+    "url": "git+ssh://git@github.com/itseasy21/react-leaflet-draw.git"
   },
   "files": [
     "dist",
@@ -32,12 +32,15 @@
     "draw",
     "editor"
   ],
-  "author": "Alexandre Rieux",
+  "contributors": [
+    "Alexandre Rieux"
+  ],
+  "author": "Shubham Mathur",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alex3165/react-leaflet-draw/issues"
+    "url": "https://github.com/itseasy21/react-leaflet-draw/issues"
   },
-  "homepage": "https://github.com/alex3165/react-leaflet-draw#readme",
+  "homepage": "https://github.com/itseasy21/react-leaflet-draw#readme",
   "types": "src/index.d.ts",
   "peerDependencies": {
     "leaflet": "^1.8.0",
