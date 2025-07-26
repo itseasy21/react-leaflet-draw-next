@@ -5,6 +5,7 @@ import { Map as LeafletMap, Control } from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
+
 // Event types
 export interface GeomanEvent {
   layer: Layer;
@@ -106,33 +107,36 @@ export interface LeafletDrawNextProps extends ControlOptions {
   onGlobalRotateModeToggled?: (event: GeomanEvent) => void;
   
   // Lifecycle events
-  onMounted?: (map: Map) => void;
-  onUnmounted?: (map: Map) => void;
+  onMounted?: (map: LeafletMap) => void;
+  onUnmounted?: (map: LeafletMap) => void;
 }
 
 // Create the Leaflet control class
 const LeafletDrawNextControl = Control.extend({
-  options: {},
+  options: {} as LeafletDrawNextProps,
+  eventHandlers: new Map<string, Function>(),
+  _map: null as LeafletMap | null,
 
   initialize(options: LeafletDrawNextProps) {
-    Control.prototype.setOptions.call(this, options);
+    this.options = { ...this.options, ...options };
     this.eventHandlers = new Map<string, Function>();
+    this._map = null;
   },
 
   addTo(map: LeafletMap) {
-    if (!map.pm) {
+    if (!(map as any).pm) {
       console.warn('Geoman is not available on the map. Make sure to import @geoman-io/leaflet-geoman-free');
       return this;
     }
 
     // Enable Geoman on the map
-    map.pm.enable();
+    (map as any).pm.enable();
 
     // Configure draw options
     if (this.options.draw) {
       Object.entries(this.options.draw).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          map.pm.setDrawOptions(key as any, value);
+          (map as any).pm.setDrawOptions(key as any, value);
         }
       });
     }
@@ -141,22 +145,25 @@ const LeafletDrawNextControl = Control.extend({
     if (this.options.edit) {
       Object.entries(this.options.edit).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          map.pm.setEditOptions(key as any, value);
+          (map as any).pm.setEditOptions(key as any, value);
         }
       });
     }
 
     // Configure toolbar options
     if (this.options.toolbar) {
-      map.pm.setToolbarOptions(this.options.toolbar);
+      (map as any).pm.setToolbarOptions(this.options.toolbar);
     }
 
     // Set feature group if provided
     if (this.options.featureGroup) {
-      map.pm.setGlobalOptions({
+      (map as any).pm.setGlobalOptions({
         layerGroup: this.options.featureGroup
       });
     }
+
+    // Store reference to map
+    this._map = map;
 
     // Add event listeners
     this.addEventListeners(map);
@@ -170,13 +177,13 @@ const LeafletDrawNextControl = Control.extend({
   },
 
   remove(map: LeafletMap) {
-    if (!map.pm) return this;
+    if (!(map as any).pm) return this;
 
     // Remove event listeners
     this.removeEventListeners(map);
 
     // Disable Geoman
-    map.pm.disable();
+    (map as any).pm.disable();
 
     // Call unmounted callback
     if (this.options.onUnmounted) {
@@ -216,7 +223,7 @@ const LeafletDrawNextControl = Control.extend({
     Object.entries(events).forEach(([event, handler]) => {
       if (handler) {
         const boundHandler = handler.bind(this);
-        map.on(event, boundHandler);
+        map.on(event, boundHandler as any);
         this.eventHandlers.set(event, boundHandler);
       }
     });
@@ -224,7 +231,7 @@ const LeafletDrawNextControl = Control.extend({
 
   removeEventListeners(map: LeafletMap) {
     this.eventHandlers.forEach((handler, event) => {
-      map.off(event, handler);
+      map.off(event, handler as any);
     });
     this.eventHandlers.clear();
   },
@@ -236,7 +243,7 @@ const LeafletDrawNextControl = Control.extend({
     if (newOptions.draw) {
       Object.entries(newOptions.draw).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          this._map.pm.setDrawOptions(key as any, value);
+          (this._map as any).pm.setDrawOptions(key as any, value);
         }
       });
     }
@@ -245,14 +252,14 @@ const LeafletDrawNextControl = Control.extend({
     if (newOptions.edit) {
       Object.entries(newOptions.edit).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          this._map.pm.setEditOptions(key as any, value);
+          (this._map as any).pm.setEditOptions(key as any, value);
         }
       });
     }
 
     // Update toolbar options
     if (newOptions.toolbar) {
-      this._map.pm.setToolbarOptions(newOptions.toolbar);
+      (this._map as any).pm.setToolbarOptions(newOptions.toolbar);
     }
   }
 });

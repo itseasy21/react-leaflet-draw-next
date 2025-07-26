@@ -3,14 +3,15 @@ import { useMap } from 'react-leaflet';
 import type { Layer } from 'leaflet';
 import { Map as LeafletMap, LayerGroup } from 'leaflet';
 import type { 
+  GeomanMap, 
   GeomanEvent, 
   GeomanCreateEvent, 
   GeomanEditEvent, 
   GeomanRemoveEvent,
   GeomanDrawOptions,
   GeomanEditOptions,
-  GeomanToolbarOptions 
-} from '../components/LeafletDrawNext';
+  GeomanToolbarOptions
+} from '../types/geoman';
 
 export interface UseGeomanOptions {
   draw?: GeomanDrawOptions;
@@ -53,7 +54,7 @@ export interface UseGeomanOptions {
 }
 
 export interface UseGeomanReturn {
-  map: Map | null;
+  map: LeafletMap | null;
   featureGroup: Layer | null;
   isDrawing: boolean;
   isEditing: boolean;
@@ -115,18 +116,18 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
     if (!map) return;
 
     // Import Geoman if not already available
-    if (!map.pm) {
+    if (!(map as any).pm) {
       import('@geoman-io/leaflet-geoman-free');
     }
 
     // Enable Geoman
-    map.pm.enable();
+    (map as any).pm.enable();
 
     // Configure options
     if (options.draw) {
       Object.entries(options.draw).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          map.pm.setDrawOptions(key as any, value);
+          (map as any).pm.setDrawOptions(key as any, value);
         }
       });
     }
@@ -134,18 +135,18 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
     if (options.edit) {
       Object.entries(options.edit).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          map.pm.setEditOptions(key as any, value);
+          (map as any).pm.setEditOptions(key as any, value);
         }
       });
     }
 
     if (options.toolbar) {
-      map.pm.setToolbarOptions(options.toolbar);
+      (map as any).pm.setToolbarOptions(options.toolbar);
     }
 
     if (featureGroup) {
-      map.pm.setGlobalOptions({
-        layerGroup: featureGroup as LayerGroup
+      (map as any).pm.setGlobalOptions({
+        layerGroup: featureGroup as any
       });
     }
 
@@ -179,7 +180,7 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
     Object.entries(events).forEach(([event, handler]) => {
       if (handler) {
         const boundHandler = handler.bind(null);
-        map.on(event, boundHandler);
+        map.on(event, boundHandler as any);
         eventHandlersRef.current.set(event, boundHandler);
       }
     });
@@ -218,12 +219,12 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
     return () => {
       // Cleanup
       eventHandlersRef.current.forEach((handler, event) => {
-        map.off(event, handler);
+        map.off(event, handler as any);
       });
       eventHandlersRef.current.clear();
       
       if (map.pm) {
-        map.pm.disable();
+        (map as any).pm.disable();
       }
     };
   }, [map, options, featureGroup]);
@@ -304,26 +305,26 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
   // Layer management
   const clearLayers = useCallback(() => {
     if (featureGroup) {
-      featureGroup.clearLayers();
+      (featureGroup as any).clearLayers();
     }
   }, [featureGroup]);
 
   const getLayers = useCallback(() => {
     if (featureGroup) {
-      return featureGroup.getLayers();
+      return (featureGroup as any).getLayers();
     }
     return [];
   }, [featureGroup]);
 
   const addLayer = useCallback((layer: Layer) => {
     if (featureGroup) {
-      featureGroup.addLayer(layer);
+      (featureGroup as any).addLayer(layer);
     }
   }, [featureGroup]);
 
   const removeLayer = useCallback((layer: Layer) => {
     if (featureGroup) {
-      featureGroup.removeLayer(layer);
+      (featureGroup as any).removeLayer(layer);
     }
   }, [featureGroup]);
 
@@ -332,7 +333,7 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
     if (map?.pm) {
       Object.entries(newOptions).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          map.pm.setDrawOptions(key as any, value);
+          (map as any).pm.setDrawOptions(key as any, value);
         }
       });
     }
@@ -342,7 +343,7 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
     if (map?.pm) {
       Object.entries(newOptions).forEach(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
-          map.pm.setEditOptions(key as any, value);
+          (map as any).pm.setEditOptions(key as any, value);
         }
       });
     }
@@ -350,7 +351,7 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
 
   const updateToolbarOptions = useCallback((newOptions: GeomanToolbarOptions) => {
     if (map?.pm) {
-      map.pm.setToolbarOptions(newOptions);
+      (map as any).pm.setToolbarOptions(newOptions);
     }
   }, [map]);
 

@@ -49,3 +49,39 @@ export interface GeomanRemoveEvent extends GeomanEvent {
   layerType: string;
   originalEvent: Event;
 }
+
+export interface GeomanDrawOptions {
+  marker?: boolean;
+  circle?: boolean;
+  polygon?: boolean;
+  polyline?: boolean;
+  rectangle?: boolean;
+  circlemarker?: boolean;
+  text?: boolean;
+  cut?: boolean;
+  rotate?: boolean;
+}
+
+export interface GeomanEditOptions {
+  edit?: boolean;
+  remove?: boolean;
+  drag?: boolean;
+  cut?: boolean;
+  rotate?: boolean;
+}
+
+export interface GeomanToolbarOptions {
+  position?: 'topleft' | 'topright' | 'bottomleft' | 'bottomright';
+  drawMarker?: boolean;
+  drawPolygon?: boolean;
+  drawPolyline?: boolean;
+  drawCircle?: boolean;
+  drawRectangle?: boolean;
+  drawCircleMarker?: boolean;
+  drawText?: boolean;
+  editMode?: boolean;
+  removalMode?: boolean;
+  dragMode?: boolean;
+  cutMode?: boolean;
+  rotateMode?: boolean;
+}
