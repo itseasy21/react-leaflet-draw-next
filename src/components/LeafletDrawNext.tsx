@@ -1,6 +1,7 @@
 import React from 'react';
 import { createControlComponent } from '@react-leaflet/core';
-import type { Map, ControlOptions, ControlPosition, Layer } from 'leaflet';
+import type { ControlOptions, ControlPosition, Layer } from 'leaflet';
+import { Map as LeafletMap, Control } from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
@@ -110,15 +111,15 @@ export interface LeafletDrawNextProps extends ControlOptions {
 }
 
 // Create the Leaflet control class
-const LeafletDrawNextControl = (L.Control as any).extend({
+const LeafletDrawNextControl = Control.extend({
   options: {},
 
   initialize(options: LeafletDrawNextProps) {
-    L.setOptions(this, options);
-    this.eventHandlers = new Map();
+    Control.prototype.setOptions.call(this, options);
+    this.eventHandlers = new Map<string, Function>();
   },
 
-  addTo(map: Map) {
+  addTo(map: LeafletMap) {
     if (!map.pm) {
       console.warn('Geoman is not available on the map. Make sure to import @geoman-io/leaflet-geoman-free');
       return this;
@@ -168,7 +169,7 @@ const LeafletDrawNextControl = (L.Control as any).extend({
     return this;
   },
 
-  remove(map: Map) {
+  remove(map: LeafletMap) {
     if (!map.pm) return this;
 
     // Remove event listeners
@@ -185,7 +186,7 @@ const LeafletDrawNextControl = (L.Control as any).extend({
     return this;
   },
 
-  addEventListeners(map: Map) {
+  addEventListeners(map: LeafletMap) {
     const events = {
       'pm:create': this.options.onCreated,
       'pm:edit': this.options.onEdited,
@@ -221,7 +222,7 @@ const LeafletDrawNextControl = (L.Control as any).extend({
     });
   },
 
-  removeEventListeners(map: Map) {
+  removeEventListeners(map: LeafletMap) {
     this.eventHandlers.forEach((handler, event) => {
       map.off(event, handler);
     });

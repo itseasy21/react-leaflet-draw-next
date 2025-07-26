@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
-import type { Map, Layer } from 'leaflet';
+import type { Layer } from 'leaflet';
+import { Map as LeafletMap, LayerGroup } from 'leaflet';
 import type { 
   GeomanEvent, 
   GeomanCreateEvent, 
@@ -107,7 +108,7 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
   const [currentMode, setCurrentMode] = useState<string | null>(null);
   const [featureGroup, setFeatureGroup] = useState<Layer | null>(options.featureGroup || null);
   
-  const eventHandlersRef = useRef<Map<string, Function>>(new Map());
+  const eventHandlersRef = useRef<Map<string, Function>>(new Map<string, Function>());
 
   // Initialize Geoman
   useEffect(() => {
@@ -144,7 +145,7 @@ export const useGeoman = (options: UseGeomanOptions = {}): UseGeomanReturn => {
 
     if (featureGroup) {
       map.pm.setGlobalOptions({
-        layerGroup: featureGroup
+        layerGroup: featureGroup as LayerGroup
       });
     }
 
