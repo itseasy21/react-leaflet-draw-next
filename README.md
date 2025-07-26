@@ -1,126 +1,540 @@
-# React-Leaflet-Draw-Next
+# React-Leaflet-Geoman
 
-React component built on top of [React-Leaflet](https://github.com/PaulLeCam/react-leaflet) that integrates [leaflet-draw](https://github.com/Leaflet/Leaflet.draw) features. This is the next-generation extension: **react-leaflet-draw-next**.
+Modern React component for Leaflet map drawing and editing using [Geoman.io](https://geoman.io), with full TypeScript support and React 19 compatibility.
 
-## Install
+## 🚀 Features
 
+- **Modern Geoman Integration**: Built on top of the latest Geoman.io library
+- **Full TypeScript Support**: Complete type coverage for all events and options
+- **React 19 Compatible**: Works with the latest React versions
+- **Custom Hook**: `useGeoman` hook for programmatic control
+- **Tree-shakeable**: Optimized bundle size with ESM exports
+- **SSR Compatible**: No window/DOM access at import time
+- **Comprehensive Events**: All Geoman events supported with proper typing
+- **Customizable Toolbar**: Full control over drawing and editing tools
+- **Feature Group Support**: Organized layer management
+- **Accessibility**: Keyboard navigation and ARIA labels support
 
-```
-npm install react-leaflet-draw-next
-```
+## 📦 Installation
 
-## Getting started
-
-First, include leaflet & leaflet-draw styles in your project
-```html
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css"/>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
-```
-or by including
-```
-node_modules/leaflet/dist/leaflet.css
-node_modules/leaflet-draw/dist/leaflet.draw.css
-```
-
-You might need to add one more rule missing in the current css:
-```css
-  .sr-only {
-    display: none;
-  }
+```bash
+npm install react-leaflet-geoman
 ```
 
-It's important to wrap EditControl component into FeatureGroup component from `react-leaflet`.
-The elements you draw will be added to this FeatureGroup layer, when you hit edit button only items in this layer will be edited.
+### Peer Dependencies
 
-```jsx
-import { Map, TileLayer, FeatureGroup, Circle } from 'react-leaflet';
-import { EditControl } from "react-leaflet-draw-next"
+Make sure you have these installed:
 
-const Component = () => (
-  <FeatureGroup>
-    <EditControl
-      position='topright'
-      onEdited={this._onEditPath}
-      onCreated={this._onCreate}
-      onDeleted={this._onDeleted}
-      draw={{
-        rectangle: false
-      }}
-    />
-    <Circle center={[51.51, -0.06]} radius={200} />
-  </FeatureGroup>
-);
+```bash
+npm install leaflet react-leaflet @geoman-io/leaflet-geoman-free
+npm install -D @types/leaflet
 ```
 
-For more details on how to use this plugin check out the examples [example](examples).
-- `npm run example:class` to compile the class example
-- `npm run example:hooks` to compile and run the hooks example
+## 🎯 Quick Start
 
-You can pass more options on draw object, this informations can be found [here](https://github.com/Leaflet/Leaflet.draw#user-content-example-leafletdraw-config)
+### Basic Usage
 
-# Project Background & Extension
+```tsx
+import React from 'react';
+import { MapContainer, TileLayer, FeatureGroup } from 'react-leaflet';
+import { LeafletDrawNext } from 'react-leaflet-geoman';
 
-This repository is an extension of the original [react-leaflet-draw](https://github.com/alex3165/react-leaflet-draw) by @alex3165, adding more features, modern support, and ongoing improvements for future React and Leaflet versions. The package name is now **react-leaflet-draw-next** to reflect its next-generation status.
+const App = () => {
+  const handleCreated = (event) => {
+    console.log('Layer created:', event);
+  };
 
-It aims to provide a robust, actively maintained drawing/editing solution for React-Leaflet maps, with enhanced API, better TypeScript support, and community-driven features.
+  const handleEdited = (event) => {
+    console.log('Layer edited:', event);
+  };
 
-## Development Guidelines
+  const handleRemoved = (event) => {
+    console.log('Layer removed:', event);
+  };
 
-- Fork the repository and create a feature branch for your changes.
-- Run `npm run example:class` or `npm run example:hooks` to test your changes in the example apps.
-- Use `npm run lint` to check code style before submitting PRs.
-- Prefer updating both hooks and class examples when changing core APIs.
-- For TypeScript changes, update type definitions in `src/index.d.ts` and hooks example as needed.
-- All new features should be compatible with both hooks and class-based usage.
-- Document new props or API changes in this README and in example files.
+  return (
+    <MapContainer
+      center={[51.505, -0.09]}
+      zoom={13}
+      style={{ height: '100vh', width: '100%' }}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <FeatureGroup>
+        <LeafletDrawNext
+          position="topright"
+          onCreated={handleCreated}
+          onEdited={handleEdited}
+          onRemoved={handleRemoved}
+          draw={{
+            marker: true,
+            circle: true,
+            rectangle: true,
+            polygon: true,
+            polyline: true,
+            circlemarker: true,
+            text: true,
+          }}
+          edit={{
+            edit: true,
+            remove: true,
+            drag: true,
+            cut: true,
+            rotate: true,
+          }}
+          toolbar={{
+            drawMarker: true,
+            drawCircleMarker: true,
+            drawPolyline: true,
+            drawRectangle: true,
+            drawPolygon: true,
+            drawCircle: true,
+            drawText: true,
+            editMode: true,
+            dragMode: true,
+            cutPolygon: true,
+            removalMode: true,
+            rotateMode: true,
+          }}
+        />
+      </FeatureGroup>
+    </MapContainer>
+  );
+};
 
-## Issue & Contribution Guidelines
-
-- Please search existing issues before raising a new one.
-- When reporting bugs, include reproduction steps and code snippets if possible.
-- Feature requests should describe the use case and proposed API.
-- Pull requests must be rebased on the latest master and pass linting/build checks.
-- All contributions are welcome! See the [CONTRIBUTING.md](CONTRIBUTING.md) if available.
-
-## License
-
-This project is licensed under the ISC License (see `package.json`).
-
+export default App;
 ```
-ISC License
 
-Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+### Using the Custom Hook
 
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+```tsx
+import React from 'react';
+import { MapContainer, TileLayer, FeatureGroup } from 'react-leaflet';
+import { useGeoman } from 'react-leaflet-geoman';
+
+const MapWithHook = () => {
+  const {
+    isDrawing,
+    isEditing,
+    isRemoving,
+    enableDraw,
+    disableDraw,
+    enableEdit,
+    disableEdit,
+    clearLayers,
+    getLayers,
+  } = useGeoman({
+    onCreated: (event) => console.log('Created:', event),
+    onEdited: (event) => console.log('Edited:', event),
+    onRemoved: (event) => console.log('Removed:', event),
+  });
+
+  return (
+    <div>
+      <div className="controls">
+        <button onClick={enableDraw} disabled={isDrawing}>
+          Start Drawing
+        </button>
+        <button onClick={disableDraw} disabled={!isDrawing}>
+          Stop Drawing
+        </button>
+        <button onClick={enableEdit} disabled={isEditing}>
+          Start Editing
+        </button>
+        <button onClick={disableEdit} disabled={!isEditing}>
+          Stop Editing
+        </button>
+        <button onClick={clearLayers}>
+          Clear All ({getLayers().length})
+        </button>
+      </div>
+      
+      <MapContainer
+        center={[51.505, -0.09]}
+        zoom={13}
+        style={{ height: '500px', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <FeatureGroup />
+      </MapContainer>
+    </div>
+  );
+};
 ```
 
-## EditControl API
+## 📚 API Reference
+
+### LeafletDrawNext Component
 
 #### Props
 
-|name            |type                        |description                                           |
-|----------------|----------------------------|------------------------------------------------------|
-|position        |string                      |control group position                                |
-|draw            |object <DrawOptions>        |enable/disable draw controls                          |
-|edit            |object <EditPolyOptions>    |enable/disable edit controls                          |
-|onEdited        |function                    |hook to leaflet-draw's `draw:edited` event            |
-|onCreated       |function                    |hook to leaflet-draw-next's `draw:created` event           |
-|onDeleted       |function                    |hook to leaflet-draw-next's `draw:deleted` event           |
-|onMounted       |function                    |hook to leaflet-draw-next's `draw:mounted` event           |
-|onEditStart     |function                    |hook to leaflet-draw-next's `draw:editstart` event         |
-|onEditStop      |function                    |hook to leaflet-draw-next's `draw:editstop` event          |
-|onDeleteStart   |function                    |hook to leaflet-draw-next's `draw:deletestart` event       |
-|onDeleteStop    |function                    |hook to leaflet-draw-next's `draw:deletestop` event        |
-|onDrawStart     |function                    |hook to leaflet-draw-next's `draw:drawstart` event         |
-|onDrawStop      |function                    |hook to leaflet-draw-next's `draw:drawstop` event          |
-|onDrawVertex    |function                    |hook to leaflet-draw-next's `draw:drawvertex` event        |
-|onEditMove      |function                    |hook to leaflet-draw-next's `draw:editmove` event          |
-|onEditResize    |function                    |hook to leaflet-draw-next's `draw:editresize` event          |
-|onEditVertex    |function                    |hook to leaflet-draw-next's `draw:editvertex` event          |
+| Prop | Type | Description |
+|------|------|-------------|
+| `position` | `ControlPosition` | Position of the toolbar ('topright', 'topleft', 'bottomright', 'bottomleft') |
+| `draw` | `GeomanDrawOptions` | Drawing options for different shapes |
+| `edit` | `GeomanEditOptions` | Editing options for layers |
+| `toolbar` | `GeomanToolbarOptions` | Toolbar configuration |
+| `featureGroup` | `Layer` | Feature group to manage drawn layers |
+| `onCreated` | `(event: GeomanCreateEvent) => void` | Called when a layer is created |
+| `onEdited` | `(event: GeomanEditEvent) => void` | Called when a layer is edited |
+| `onRemoved` | `(event: GeomanRemoveEvent) => void` | Called when a layer is removed |
+| `onDragStart` | `(event: GeomanEvent) => void` | Called when dragging starts |
+| `onDrag` | `(event: GeomanEvent) => void` | Called during dragging |
+| `onDragEnd` | `(event: GeomanEvent) => void` | Called when dragging ends |
+| `onCut` | `(event: GeomanEvent) => void` | Called when a layer is cut |
+| `onRotate` | `(event: GeomanEvent) => void` | Called when a layer is rotated |
 
-#### Links to docs
+#### Drawing Events
 
-* [Control position options](http://leafletjs.com/reference.html#control-positions)
-* [DrawOptions](https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#drawoptions)
-* [EditPolyOptions](https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#editpolyoptions)
-* [Draw events](https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event)
+| Event | Description |
+|-------|-------------|
+| `onDrawStart` | Called when drawing starts |
+| `onDrawStop` | Called when drawing stops |
+| `onDrawVertex` | Called when a vertex is added during drawing |
+
+#### Editing Events
+
+| Event | Description |
+|-------|-------------|
+| `onEditStart` | Called when editing starts |
+| `onEditStop` | Called when editing stops |
+| `onEditVertex` | Called when a vertex is edited |
+| `onEditMove` | Called when a layer is moved during editing |
+| `onEditResize` | Called when a layer is resized during editing |
+
+#### Removal Events
+
+| Event | Description |
+|-------|-------------|
+| `onRemoveStart` | Called when removal mode is activated |
+| `onRemoveStop` | Called when removal mode is deactivated |
+
+#### Global Mode Events
+
+| Event | Description |
+|-------|-------------|
+| `onGlobalDrawModeToggled` | Called when global draw mode is toggled |
+| `onGlobalDragModeToggled` | Called when global drag mode is toggled |
+| `onGlobalRemovalModeToggled` | Called when global removal mode is toggled |
+| `onGlobalCutModeToggled` | Called when global cut mode is toggled |
+| `onGlobalRotateModeToggled` | Called when global rotate mode is toggled |
+
+### useGeoman Hook
+
+#### Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `map` | `Map \| null` | The Leaflet map instance |
+| `featureGroup` | `Layer \| null` | The feature group for layers |
+| `isDrawing` | `boolean` | Whether drawing mode is active |
+| `isEditing` | `boolean` | Whether editing mode is active |
+| `isRemoving` | `boolean` | Whether removal mode is active |
+| `isDragging` | `boolean` | Whether drag mode is active |
+| `isCutting` | `boolean` | Whether cut mode is active |
+| `isRotating` | `boolean` | Whether rotate mode is active |
+| `currentMode` | `string \| null` | Current active mode |
+
+#### Control Functions
+
+| Function | Description |
+|----------|-------------|
+| `enableDraw()` | Enable drawing mode |
+| `disableDraw()` | Disable drawing mode |
+| `enableEdit()` | Enable editing mode |
+| `disableEdit()` | Disable editing mode |
+| `enableRemove()` | Enable removal mode |
+| `disableRemove()` | Disable removal mode |
+| `enableDrag()` | Enable drag mode |
+| `disableDrag()` | Disable drag mode |
+| `enableCut()` | Enable cut mode |
+| `disableCut()` | Disable cut mode |
+| `enableRotate()` | Enable rotate mode |
+| `disableRotate()` | Disable rotate mode |
+
+#### Layer Management
+
+| Function | Description |
+|----------|-------------|
+| `clearLayers()` | Remove all layers from the feature group |
+| `getLayers()` | Get all layers in the feature group |
+| `addLayer(layer)` | Add a layer to the feature group |
+| `removeLayer(layer)` | Remove a layer from the feature group |
+
+#### Options Management
+
+| Function | Description |
+|----------|-------------|
+| `updateDrawOptions(options)` | Update drawing options |
+| `updateEditOptions(options)` | Update editing options |
+| `updateToolbarOptions(options)` | Update toolbar options |
+
+#### Toggle Functions
+
+| Function | Description |
+|----------|-------------|
+| `toggleDraw()` | Toggle drawing mode |
+| `toggleEdit()` | Toggle editing mode |
+| `toggleRemove()` | Toggle removal mode |
+| `toggleDrag()` | Toggle drag mode |
+| `toggleCut()` | Toggle cut mode |
+| `toggleRotate()` | Toggle rotate mode |
+
+## 🔧 Configuration
+
+### Draw Options
+
+```tsx
+const drawOptions = {
+  marker: {
+    icon: L.divIcon({ className: 'custom-marker' }),
+    draggable: true,
+  },
+  circle: {
+    radius: 1000,
+    color: '#ff0000',
+    fillColor: '#ff0000',
+    fillOpacity: 0.3,
+  },
+  polygon: {
+    color: '#0000ff',
+    fillColor: '#0000ff',
+    fillOpacity: 0.3,
+    allowIntersection: false,
+  },
+  polyline: {
+    color: '#00ff00',
+    weight: 3,
+  },
+  rectangle: {
+    color: '#ff00ff',
+    fillColor: '#ff00ff',
+    fillOpacity: 0.3,
+  },
+  circlemarker: {
+    radius: 10,
+    color: '#ffff00',
+    fillColor: '#ffff00',
+    fillOpacity: 0.7,
+  },
+  text: {
+    text: 'Sample Text',
+    icon: L.divIcon({ className: 'custom-text-icon' }),
+  },
+};
+```
+
+### Edit Options
+
+```tsx
+const editOptions = {
+  edit: {
+    selectedPathOptions: {
+      color: '#ff0000',
+      fillColor: '#ff0000',
+      fillOpacity: 0.3,
+    },
+    allowIntersection: false,
+    preventMarkerRemoval: false,
+    preventVertexEdit: false,
+  },
+  remove: {
+    preventMarkerRemoval: false,
+  },
+  drag: {
+    draggable: true,
+  },
+  cut: {
+    snappable: true,
+    snapDistance: 20,
+    allowIntersection: false,
+  },
+  rotate: {
+    rotateAngle: 45,
+  },
+};
+```
+
+### Toolbar Options
+
+```tsx
+const toolbarOptions = {
+  position: 'topright',
+  drawMarker: true,
+  drawCircleMarker: true,
+  drawPolyline: true,
+  drawRectangle: true,
+  drawPolygon: true,
+  drawCircle: true,
+  drawText: true,
+  editMode: true,
+  dragMode: true,
+  cutPolygon: true,
+  removalMode: true,
+  rotateMode: true,
+  oneBlock: false,
+  drawTextInOneBlock: false,
+  editInOneBlock: false,
+};
+```
+
+## 🔄 Migration from react-leaflet-draw
+
+If you're migrating from `react-leaflet-draw`, here are the key changes:
+
+### Before (react-leaflet-draw)
+
+```tsx
+import { EditControl } from 'react-leaflet-draw';
+
+<EditControl
+  position="topright"
+  onCreated={handleCreated}
+  onEdited={handleEdited}
+  onDeleted={handleDeleted}
+  draw={{
+    rectangle: false,
+  }}
+  edit={{
+    edit: true,
+    remove: true,
+  }}
+/>
+```
+
+### After (react-leaflet-geoman)
+
+```tsx
+import { LeafletDrawNext } from 'react-leaflet-geoman';
+
+<LeafletDrawNext
+  position="topright"
+  onCreated={handleCreated}
+  onEdited={handleEdited}
+  onRemoved={handleDeleted} // Note: onDeleted -> onRemoved
+  draw={{
+    rectangle: false,
+  }}
+  edit={{
+    edit: true,
+    remove: true,
+  }}
+/>
+```
+
+### Key Changes
+
+1. **Import**: `EditControl` → `LeafletDrawNext`
+2. **Event names**: `onDeleted` → `onRemoved`
+3. **Additional events**: More comprehensive event system
+4. **Better TypeScript support**: Full type coverage
+5. **Custom hook**: `useGeoman` for programmatic control
+
+## 🎨 Styling
+
+### CSS Import
+
+Make sure to import the Geoman CSS:
+
+```tsx
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+```
+
+### Custom Styling
+
+You can customize the toolbar appearance:
+
+```css
+/* Custom toolbar styling */
+.leaflet-pm-toolbar {
+  background: #ffffff;
+  border: 2px solid #cccccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-pm-toolbar .leaflet-pm-icon {
+  background-color: #007bff;
+  color: white;
+}
+
+.leaflet-pm-toolbar .leaflet-pm-icon:hover {
+  background-color: #0056b3;
+}
+
+.leaflet-pm-toolbar .leaflet-pm-icon.active {
+  background-color: #28a745;
+}
+```
+
+## 🧪 Testing
+
+```tsx
+import { render, screen } from '@testing-library/react';
+import { LeafletDrawNext } from 'react-leaflet-geoman';
+
+// Mock Leaflet and Geoman
+jest.mock('leaflet');
+jest.mock('@geoman-io/leaflet-geoman-free');
+
+test('renders LeafletDrawNext component', () => {
+  render(
+    <MapContainer center={[0, 0]} zoom={10}>
+      <LeafletDrawNext position="topright" />
+    </MapContainer>
+  );
+  
+  // Add your assertions here
+});
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+```bash
+git clone https://github.com/your-username/react-leaflet-geoman.git
+cd react-leaflet-geoman
+npm install
+npm run dev
+```
+
+### Running Tests
+
+```bash
+npm test
+npm run test:coverage
+```
+
+### Building
+
+```bash
+npm run build
+```
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Geoman.io](https://geoman.io) for the excellent drawing library
+- [React-Leaflet](https://react-leaflet.js.org) for the React integration
+- [Leaflet](https://leafletjs.com) for the mapping library
+
+## 📞 Support
+
+- 📖 [Documentation](https://github.com/your-username/react-leaflet-geoman)
+- 🐛 [Issues](https://github.com/your-username/react-leaflet-geoman/issues)
+- 💬 [Discussions](https://github.com/your-username/react-leaflet-geoman/discussions)
+
+---
+
+Made with ❤️ by the React-Leaflet-Geoman community
