@@ -33,8 +33,7 @@
     "prepublishOnly": "npm run clean && npm run build && npm run test",
     "example:dev": "cd examples/react-app && npm run dev",
     "example:build": "cd examples/react-app && npm run build",
-    "storybook": "cd examples/storybook && npm run storybook",
-    "storybook:build": "cd examples/storybook && npm run build-storybook"
+    "example:install": "cd examples/react-app && npm install"
   },
   "repository": {
     "type": "git",
