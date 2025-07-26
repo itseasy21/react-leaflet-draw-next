@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, FeatureGroup, Circle } from 'react-leaflet';
-import { LeafletDrawNext, useGeoman } from 'react-leaflet-geoman';
-import type { GeomanCreateEvent, GeomanEditEvent, GeomanRemoveEvent } from 'react-leaflet-geoman';
+import { LeafletDrawNext, useGeoman } from '../../../dist/esm/index';
+import type { GeomanCreateEvent, GeomanEditEvent, GeomanRemoveEvent } from '../../../dist/esm/index';
 import './App.css';
 
 // Example component using the LeafletDrawNext component
