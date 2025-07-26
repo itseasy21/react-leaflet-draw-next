@@ -52,6 +52,7 @@ The example app will open at `http://localhost:3000` and show two tabs:
 Make sure you have the following installed:
 - Node.js 18+
 - npm 8+
+- React 19 (automatically installed)
 
 ### Quick Start
 

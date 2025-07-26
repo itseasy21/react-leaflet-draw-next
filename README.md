@@ -6,7 +6,7 @@ Modern React component for Leaflet map drawing and editing using [Geoman.io](htt
 
 - **Modern Geoman Integration**: Built on top of the latest Geoman.io library
 - **Full TypeScript Support**: Complete type coverage for all events and options
-- **React 19 Compatible**: Works with the latest React versions
+- **React 19 Compatible**: Built for React 19 with latest features
 - **Custom Hook**: `useGeoman` hook for programmatic control
 - **Tree-shakeable**: Optimized bundle size with ESM exports
 - **SSR Compatible**: No window/DOM access at import time

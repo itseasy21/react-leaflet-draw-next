@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - Complete migration from leaflet-draw to geoman-io
 - Full TypeScript support
-- React 19 compatibility
+- React 19 support (primary target)
 - Comprehensive documentation and examples
 
 ---
