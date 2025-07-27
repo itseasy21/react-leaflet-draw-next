@@ -131,6 +131,8 @@ const App = () => {
 
 A custom React hook providing programmatic control over Geoman.io functionalities.
 
+**Important**: The `useGeoman` hook must be used inside a component that is rendered within a `MapContainer`. This is because the hook uses `useMap()` from `@react-leaflet/core` which requires the Leaflet context.
+
 #### Parameters
 
 ```typescript
@@ -215,7 +217,8 @@ import React from 'react';
 import { MapContainer, TileLayer, FeatureGroup } from 'react-leaflet';
 import { useGeoman } from 'react-leaflet-geoman';
 
-const MapWithHook = () => {
+// Component that uses the hook inside MapContainer context
+const MapWithHookInner = () => {
   const {
     isDrawing,
     isEditing,
@@ -244,18 +247,25 @@ const MapWithHook = () => {
         <span>Layers: {getLayers().length}</span>
       </div>
       
-      <MapContainer
-        center={[51.505, -0.09]}
-        zoom={13}
-        style={{ height: '500px', width: '100%' }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <FeatureGroup />
-      </MapContainer>
+      <FeatureGroup />
     </div>
+  );
+};
+
+// Main component that provides the MapContainer context
+const MapWithHook = () => {
+  return (
+    <MapContainer
+      center={[51.505, -0.09]}
+      zoom={13}
+      style={{ height: '500px', width: '100%' }}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <MapWithHookInner />
+    </MapContainer>
   );
 };
 ```

@@ -293,9 +293,8 @@ import React, { useState } from 'react';
 import { MapContainer, TileLayer, FeatureGroup } from 'react-leaflet';
 import { useGeoman } from 'react-leaflet-geoman';
 
-const MapWithHook = () => {
-  const [layers, setLayers] = useState([]);
-  
+// Component that uses the hook inside MapContainer context
+const MapWithHookInner = () => {
   const {
     isDrawing,
     isEditing,
@@ -310,12 +309,10 @@ const MapWithHook = () => {
   } = useGeoman({
     onCreated: (event) => {
       console.log('Created:', event);
-      setLayers(prev => [...prev, event.layer]);
     },
     onEdited: (event) => console.log('Edited:', event),
     onRemoved: (event) => {
       console.log('Removed:', event);
-      setLayers(prev => prev.filter(layer => layer !== event.layer));
     },
   });
 
@@ -344,23 +341,30 @@ const MapWithHook = () => {
         </div>
       </div>
       
-      <MapContainer
-        center={[51.505, -0.09]}
-        zoom={13}
-        style={{ height: 'calc(100vh - 120px)', width: '100%' }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <FeatureGroup />
-      </MapContainer>
+      <FeatureGroup />
     </div>
   );
 };
 
-export default MapWithHook;
+// Main component that provides the MapContainer context
+const MapWithHook = () => {
+  return (
+    <MapContainer
+      center={[51.505, -0.09]}
+      zoom={13}
+      style={{ height: 'calc(100vh - 120px)', width: '100%' }}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <MapWithHookInner />
+    </MapContainer>
+  );
+};
 ```
+
+**Important**: The `useGeoman` hook must be used inside a component that is rendered within a `MapContainer`. This is because the hook uses `useMap()` from `@react-leaflet/core` which requires the Leaflet context.
 
 ### Advanced Hook Features
 

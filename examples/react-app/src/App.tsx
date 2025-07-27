@@ -81,8 +81,8 @@ const MapWithComponent = () => {
   );
 };
 
-// Example component using the useGeoman hook
-const MapWithHook = () => {
+// Component that uses the useGeoman hook inside MapContainer context
+const MapWithHookInner = () => {
   const {
     isDrawing,
     isEditing,
@@ -106,9 +106,15 @@ const MapWithHook = () => {
     clearLayers,
     getLayers,
   } = useGeoman({
-    onCreated: (event) => console.log('Created:', event),
-    onEdited: (event) => console.log('Edited:', event),
-    onRemoved: (event) => console.log('Removed:', event),
+    onCreated: (event) => {
+      console.log('Created:', event);
+    },
+    onEdited: (event) => {
+      console.log('Edited:', event);
+    },
+    onRemoved: (event) => {
+      console.log('Removed:', event);
+    },
   });
 
   return (
@@ -117,9 +123,15 @@ const MapWithHook = () => {
       
       <div className="controls">
         <div className="control-group">
-          <h3>Drawing</h3>
-          <button onClick={enableDraw} disabled={isDrawing}>
-            Start Drawing
+          <h3>Draw</h3>
+          <button onClick={() => enableDraw({ marker: true })} disabled={isDrawing}>
+            Draw Marker
+          </button>
+          <button onClick={() => enableDraw({ polygon: true })} disabled={isDrawing}>
+            Draw Polygon
+          </button>
+          <button onClick={() => enableDraw({ circle: true })} disabled={isDrawing}>
+            Draw Circle
           </button>
           <button onClick={disableDraw} disabled={!isDrawing}>
             Stop Drawing
@@ -127,22 +139,22 @@ const MapWithHook = () => {
         </div>
         
         <div className="control-group">
-          <h3>Editing</h3>
+          <h3>Edit</h3>
           <button onClick={enableEdit} disabled={isEditing}>
-            Start Editing
+            Start Edit
           </button>
           <button onClick={disableEdit} disabled={!isEditing}>
-            Stop Editing
+            Stop Edit
           </button>
         </div>
         
         <div className="control-group">
-          <h3>Removal</h3>
+          <h3>Remove</h3>
           <button onClick={enableRemove} disabled={isRemoving}>
-            Start Removal
+            Start Remove
           </button>
           <button onClick={disableRemove} disabled={!isRemoving}>
-            Stop Removal
+            Stop Remove
           </button>
         </div>
         
@@ -194,18 +206,25 @@ const MapWithHook = () => {
         <p>Rotating: {isRotating ? 'Yes' : 'No'}</p>
       </div>
       
-      <MapContainer
-        center={[51.505, -0.09]}
-        zoom={13}
-        style={{ height: '500px', width: '100%' }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <FeatureGroup />
-      </MapContainer>
+      <FeatureGroup />
     </div>
+  );
+};
+
+// Example component using the useGeoman hook
+const MapWithHook = () => {
+  return (
+    <MapContainer
+      center={[51.505, -0.09]}
+      zoom={13}
+      style={{ height: '500px', width: '100%' }}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <MapWithHookInner />
+    </MapContainer>
   );
 };
 
