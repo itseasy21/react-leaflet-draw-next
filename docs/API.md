@@ -430,6 +430,8 @@ const handleEvent = (event: any) => {
 };
 ```
 
+**Note**: Type guards are now exported from the main package and can be imported directly without any import path issues.
+
 ## Examples
 
 ### Advanced Configuration

@@ -60,7 +60,7 @@ export {
   isGeomanCircle,
   isGeomanRectangle,
   isGeomanCircleMarker,
-} from './types/geoman';
+} from './utils/typeGuards';
 
 // Re-export for backward compatibility
 export { LeafletDrawNext as EditControl } from './components/LeafletDrawNext';

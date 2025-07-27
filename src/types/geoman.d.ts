@@ -5,27 +5,27 @@ declare module 'leaflet' {
   interface Map {
     pm: GeomanMap;
   }
-  
+
   interface Layer {
     pm?: GeomanLayer;
   }
-  
+
   interface Marker {
     pm?: GeomanMarker;
   }
-  
+
   interface Polygon {
     pm?: GeomanPolygon;
   }
-  
+
   interface Polyline {
     pm?: GeomanPolyline;
   }
-  
+
   interface Circle {
     pm?: GeomanCircle;
   }
-  
+
   interface CircleMarker {
     pm?: GeomanCircleMarker;
   }
@@ -35,7 +35,6 @@ declare module 'leaflet' {
 export interface GeomanMap {
   enable(): void;
   disable(): void;
-  
   // Drawing options
   setPathOptions(options: L.PathOptions): void;
   setDrawOptions(options: GeomanDrawOptions): void;
@@ -44,7 +43,7 @@ export interface GeomanMap {
   setCutOptions(options: GeomanCutOptions): void;
   setRotateOptions(options: GeomanRotateOptions): void;
   setTextOptions(options: GeomanTextOptions): void;
-  
+
   // Shape-specific options
   setCircleOptions(options: GeomanCircleOptions): void;
   setRectangleOptions(options: GeomanRectangleOptions): void;
@@ -52,11 +51,11 @@ export interface GeomanMap {
   setPolylineOptions(options: GeomanPolylineOptions): void;
   setMarkerOptions(options: GeomanMarkerOptions): void;
   setCircleMarkerOptions(options: GeomanCircleMarkerOptions): void;
-  
+
   // Toolbar and global options
   setToolbarOptions(options: GeomanToolbarOptions): void;
   setGlobalOptions(options: GeomanGlobalOptions): void;
-  
+
   // Mode control
   enableDraw(options?: GeomanDrawOptions): void;
   disableDraw(): void;
@@ -68,9 +67,9 @@ export interface GeomanMap {
   disableCut(): void;
   enableRotate(options?: GeomanRotateOptions): void;
   disableRotate(): void;
-  enableDrag(options?: any): void;
+  enableDrag(): void;
   disableDrag(): void;
-  
+
   // Utility methods
   getGeomanLayers(): L.Layer[];
   removeGeomanLayers(): void;
@@ -186,7 +185,7 @@ export interface GeomanDrawOptions {
   text?: boolean;
   cut?: boolean;
   rotate?: boolean;
-  
+
   // Global drawing options
   templineStyle?: L.PathOptions;
   hintlineStyle?: L.PathOptions;
@@ -218,7 +217,7 @@ export interface GeomanEditOptions {
   drag?: boolean;
   cut?: boolean;
   rotate?: boolean;
-  
+
   // Global editing options
   snappable?: boolean;
   snapDistance?: number;
@@ -381,7 +380,7 @@ export interface GeomanCircleMarkerOptions extends L.CircleMarkerOptions {
 // Toolbar options
 export interface GeomanToolbarOptions {
   position?: 'topleft' | 'topright' | 'bottomleft' | 'bottomright';
-  
+
   // Drawing tools
   drawMarker?: boolean;
   drawPolygon?: boolean;
@@ -390,14 +389,14 @@ export interface GeomanToolbarOptions {
   drawRectangle?: boolean;
   drawCircleMarker?: boolean;
   drawText?: boolean;
-  
+
   // Editing tools
   editMode?: boolean;
   removalMode?: boolean;
   dragMode?: boolean;
   cutMode?: boolean;
   rotateMode?: boolean;
-  
+
   // Customization
   drawText?: boolean;
   oneBlock?: boolean;
@@ -407,13 +406,13 @@ export interface GeomanToolbarOptions {
   cutPMButton?: boolean;
   rotatePMButton?: boolean;
   removalPMButton?: boolean;
-  
+
   // Styling
   buttonClass?: string;
   buttonClassActive?: string;
   buttonClassInactive?: string;
   buttonClassDisabled?: string;
-  
+
   // Icons
   drawMarkerIcon?: string;
   drawPolygonIcon?: string;
@@ -427,7 +426,7 @@ export interface GeomanToolbarOptions {
   cutIcon?: string;
   rotateIcon?: string;
   removalIcon?: string;
-  
+
   // Labels
   drawMarkerText?: string;
   drawPolygonText?: string;
@@ -459,7 +458,7 @@ export interface GeomanGlobalOptions {
     timeout?: number;
     message?: string;
   };
-  
+
   // Editing options
   preventMarkerRemoval?: boolean;
   preventVertexEdit?: boolean;
@@ -470,7 +469,7 @@ export interface GeomanGlobalOptions {
   preventVertexResize?: boolean;
   preventVertexRotate?: boolean;
   preventVertexCut?: boolean;
-  
+
   // UI options
   hideMiddleMarkers?: boolean;
   hideMiddleMarkersOnDrag?: boolean;
@@ -478,23 +477,23 @@ export interface GeomanGlobalOptions {
   hideMiddleMarkersOnRemove?: boolean;
   hideMiddleMarkersOnCut?: boolean;
   hideMiddleMarkersOnRotate?: boolean;
-  
+
   // Performance options
   limitMarkersToCount?: number;
   limitMarkersToZoom?: number;
   limitMarkersToBounds?: L.LatLngBounds;
-  
+
   // Customization
   customControls?: boolean;
   customControlsClass?: string;
   customControlsPosition?: 'topleft' | 'topright' | 'bottomleft' | 'bottomright';
-  
+
   // Layer group
   layerGroup?: L.Layer;
 }
 
 // Event names for type safety
-export type GeomanEventName = 
+export type GeomanEventName =
   | 'pm:create'
   | 'pm:edit'
   | 'pm:remove'
@@ -522,53 +521,3 @@ export type GeomanEventName =
   | 'pm:globalremovalmodetoggled'
   | 'pm:globalcutmodetoggled'
   | 'pm:globalrotatemodetoggled';
-
-// Type guards for runtime type checking
-export function isGeomanCreateEvent(event: any): event is GeomanCreateEvent {
-  return event && event.type === 'pm:create' && event.layer;
-}
-
-export function isGeomanEditEvent(event: any): event is GeomanEditEvent {
-  return event && event.type === 'pm:edit' && event.layer;
-}
-
-export function isGeomanRemoveEvent(event: any): event is GeomanRemoveEvent {
-  return event && event.type === 'pm:remove' && event.layer;
-}
-
-export function isGeomanDragEvent(event: any): event is GeomanDragEvent {
-  return event && event.type?.startsWith('pm:drag') && event.layer;
-}
-
-export function isGeomanCutEvent(event: any): event is GeomanCutEvent {
-  return event && event.type?.startsWith('pm:cut') && event.layer;
-}
-
-export function isGeomanRotateEvent(event: any): event is GeomanRotateEvent {
-  return event && event.type?.startsWith('pm:rotate') && event.layer;
-}
-
-// Layer type discrimination
-export function isGeomanMarker(layer: L.Layer): layer is L.Marker {
-  return layer instanceof L.Marker;
-}
-
-export function isGeomanPolygon(layer: L.Layer): layer is L.Polygon {
-  return layer instanceof L.Polygon;
-}
-
-export function isGeomanPolyline(layer: L.Layer): layer is L.Polyline {
-  return layer instanceof L.Polyline;
-}
-
-export function isGeomanCircle(layer: L.Layer): layer is L.Circle {
-  return layer instanceof L.Circle;
-}
-
-export function isGeomanRectangle(layer: L.Layer): layer is L.Rectangle {
-  return layer instanceof L.Rectangle;
-}
-
-export function isGeomanCircleMarker(layer: L.Layer): layer is L.CircleMarker {
-  return layer instanceof L.CircleMarker;
-}
