@@ -1,87 +1,53 @@
 import React from 'react';
 import { createControlComponent } from '@react-leaflet/core';
-import type { ControlOptions, ControlPosition, Layer } from 'leaflet';
-import { Map as LeafletMap, Control } from 'leaflet';
-import '@geoman-io/leaflet-geoman-free';
+import type { ControlOptions } from 'leaflet';
+import { Map as LeafletMap, Control as LeafletControl } from 'leaflet';
+import type { 
+  GeomanMap, 
+  GeomanEvent, 
+  GeomanCreateEvent, 
+  GeomanEditEvent, 
+  GeomanRemoveEvent,
+  GeomanDragEvent,
+  GeomanCutEvent,
+  GeomanRotateEvent,
+  GeomanDrawOptions,
+  GeomanEditOptions,
+  GeomanToolbarOptions,
+  GeomanGlobalOptions,
+  GeomanEventName
+} from '../types/geoman';
+
+// Import Geoman CSS
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
-
-// Event types
-export interface GeomanEvent {
-  layer: Layer;
-  layerType: string;
-  originalEvent: Event;
-}
-
-export interface GeomanCreateEvent extends GeomanEvent {
-  layerType: 'marker' | 'circle' | 'rectangle' | 'polygon' | 'polyline' | 'circlemarker' | 'text';
-}
-
-export interface GeomanEditEvent extends GeomanEvent {
-  layerType: 'marker' | 'circle' | 'rectangle' | 'polygon' | 'polyline' | 'circlemarker' | 'text';
-}
-
-export interface GeomanRemoveEvent extends GeomanEvent {
-  layerType: 'marker' | 'circle' | 'rectangle' | 'polygon' | 'polyline' | 'circlemarker' | 'text';
-}
-
-// Draw options
-export interface GeomanDrawOptions {
-  marker?: boolean | object;
-  circle?: boolean | object;
-  rectangle?: boolean | object;
-  polygon?: boolean | object;
-  polyline?: boolean | object;
-  circlemarker?: boolean | object;
-  text?: boolean | object;
-}
-
-// Edit options
-export interface GeomanEditOptions {
-  edit?: boolean | object;
-  remove?: boolean | object;
-  drag?: boolean | object;
-  cut?: boolean | object;
-  rotate?: boolean | object;
-}
-
-// Toolbar options
-export interface GeomanToolbarOptions {
-  position?: ControlPosition;
-  drawMarker?: boolean;
-  drawCircleMarker?: boolean;
-  drawPolyline?: boolean;
-  drawRectangle?: boolean;
-  drawPolygon?: boolean;
-  drawCircle?: boolean;
-  drawText?: boolean;
-  editMode?: boolean;
-  dragMode?: boolean;
-  cutPolygon?: boolean;
-  removalMode?: boolean;
-  rotateMode?: boolean;
-  oneBlock?: boolean;
-  drawTextInOneBlock?: boolean;
-  editInOneBlock?: boolean;
-}
-
-// Main props interface
 export interface LeafletDrawNextProps extends ControlOptions {
-  position?: ControlPosition;
+  // Position and styling
+  position?: 'topleft' | 'topright' | 'bottomleft' | 'bottomright';
+  className?: string;
+  style?: React.CSSProperties;
+  
+  // Drawing options
   draw?: GeomanDrawOptions;
+  
+  // Editing options
   edit?: GeomanEditOptions;
+  
+  // Toolbar options
   toolbar?: GeomanToolbarOptions;
-  featureGroup?: Layer;
+  
+  // Global options
+  global?: GeomanGlobalOptions;
   
   // Event handlers
   onCreated?: (event: GeomanCreateEvent) => void;
   onEdited?: (event: GeomanEditEvent) => void;
   onRemoved?: (event: GeomanRemoveEvent) => void;
-  onDragStart?: (event: GeomanEvent) => void;
-  onDrag?: (event: GeomanEvent) => void;
-  onDragEnd?: (event: GeomanEvent) => void;
-  onCut?: (event: GeomanEvent) => void;
-  onRotate?: (event: GeomanEvent) => void;
+  onDragStart?: (event: GeomanDragEvent) => void;
+  onDrag?: (event: GeomanDragEvent) => void;
+  onDragEnd?: (event: GeomanDragEvent) => void;
+  onCut?: (event: GeomanCutEvent) => void;
+  onRotate?: (event: GeomanRotateEvent) => void;
   
   // Drawing events
   onDrawStart?: (event: GeomanCreateEvent) => void;
@@ -106,170 +72,227 @@ export interface LeafletDrawNextProps extends ControlOptions {
   onGlobalCutModeToggled?: (event: GeomanEvent) => void;
   onGlobalRotateModeToggled?: (event: GeomanEvent) => void;
   
-  // Lifecycle events
+  // Lifecycle callbacks
   onMounted?: (map: LeafletMap) => void;
   onUnmounted?: (map: LeafletMap) => void;
 }
 
-// Create the Leaflet control class
-const LeafletDrawNextControl = Control.extend({
-  options: {} as LeafletDrawNextProps,
-  eventHandlers: new Map<string, Function>(),
-  _map: null as LeafletMap | null,
+class LeafletDrawNextControl extends LeafletControl {
+  override options: LeafletDrawNextProps;
+  private eventHandlers: Map<GeomanEventName, (event: any) => void>;
+  private _map: LeafletMap | null;
 
-  initialize(options: LeafletDrawNextProps) {
-    this.options = { ...this.options, ...options };
-    this.eventHandlers = new Map<string, Function>();
+  constructor(options: LeafletDrawNextProps) {
+    super(options);
+    this.options = { ...options };
+    this.eventHandlers = new Map<GeomanEventName, (event: any) => void>();
     this._map = null;
-  },
+  }
 
-  addTo(map: LeafletMap) {
-    if (!(map as any).pm) {
-      console.warn('Geoman is not available on the map. Make sure to import @geoman-io/leaflet-geoman-free');
-      return this;
-    }
-
-    // Enable Geoman on the map
-    (map as any).pm.enable();
-
-    // Configure draw options
-    if (this.options.draw) {
-      Object.entries(this.options.draw).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
-          (map as any).pm.setDrawOptions(key as any, value);
-        }
-      });
-    }
-
-    // Configure edit options
-    if (this.options.edit) {
-      Object.entries(this.options.edit).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
-          (map as any).pm.setEditOptions(key as any, value);
-        }
-      });
-    }
-
-    // Configure toolbar options
-    if (this.options.toolbar) {
-      (map as any).pm.setToolbarOptions(this.options.toolbar);
-    }
-
-    // Set feature group if provided
-    if (this.options.featureGroup) {
-      (map as any).pm.setGlobalOptions({
-        layerGroup: this.options.featureGroup
-      });
-    }
-
-    // Store reference to map
+  override onAdd(map: LeafletMap): HTMLElement {
     this._map = map;
+    
+    // Import Geoman dynamically
+    import('@geoman-io/leaflet-geoman-free').then(() => {
+      this.initializeGeoman(map);
+    });
 
-    // Add event listeners
-    this.addEventListeners(map);
+    // Create container
+    const container = document.createElement('div');
+    container.className = 'leaflet-draw-next-control';
+    
+    if (this.options.className) {
+      container.className += ` ${this.options.className}`;
+    }
+    
+    if (this.options.style) {
+      Object.assign(container.style, this.options.style);
+    }
+
+    return container;
+  }
+
+  override onRemove(map: LeafletMap): void {
+    this.cleanup(map);
+    this._map = null;
+  }
+
+  private initializeGeoman(map: LeafletMap): void {
+    const pm = map.pm;
+
+    // Set global options
+    if (this.options.global) {
+      pm.setGlobalOptions(this.options.global);
+    }
+
+    // Set drawing options
+    if (this.options.draw) {
+      pm.setDrawOptions(this.options.draw);
+    }
+
+    // Set editing options
+    if (this.options.edit) {
+      pm.setEditOptions(this.options.edit);
+    }
+
+    // Set toolbar options
+    if (this.options.toolbar) {
+      pm.setToolbarOptions(this.options.toolbar);
+    }
+
+    // Bind event handlers
+    this.bindEventHandlers(map);
 
     // Call mounted callback
     if (this.options.onMounted) {
       this.options.onMounted(map);
     }
+  }
 
-    return this;
-  },
+  private bindEventHandlers(map: LeafletMap): void {
+    const eventMap: Record<GeomanEventName, keyof LeafletDrawNextProps> = {
+      'pm:create': 'onCreated',
+      'pm:edit': 'onEdited',
+      'pm:remove': 'onRemoved',
+      'pm:drawstart': 'onDrawStart',
+      'pm:drawstop': 'onDrawStop',
+      'pm:drawvertex': 'onDrawVertex',
+      'pm:editstart': 'onEditStart',
+      'pm:editstop': 'onEditStop',
+      'pm:editvertex': 'onEditVertex',
+      'pm:editmove': 'onEditMove',
+      'pm:editresize': 'onEditResize',
+      'pm:removestart': 'onRemoveStart',
+      'pm:removestop': 'onRemoveStop',
+      'pm:dragstart': 'onDragStart',
+      'pm:drag': 'onDrag',
+      'pm:dragend': 'onDragEnd',
+      'pm:cutstart': 'onCut',
+      'pm:cut': 'onCut',
+      'pm:cutend': 'onCut',
+      'pm:rotatestart': 'onRotate',
+      'pm:rotate': 'onRotate',
+      'pm:rotateend': 'onRotate',
+      'pm:globaldrawmodetoggled': 'onGlobalDrawModeToggled',
+      'pm:globaldragmodetoggled': 'onGlobalDragModeToggled',
+      'pm:globalremovalmodetoggled': 'onGlobalRemovalModeToggled',
+      'pm:globalcutmodetoggled': 'onGlobalCutModeToggled',
+      'pm:globalrotatemodetoggled': 'onGlobalRotateModeToggled',
+    };
 
-  remove(map: LeafletMap) {
-    if (!(map as any).pm) return this;
+    Object.entries(eventMap).forEach(([eventName, propName]) => {
+      const handler = this.options[propName];
+      if (handler && typeof handler === 'function') {
+        const boundHandler = (event: any) => {
+          (handler as Function)(event);
+        };
+        this.eventHandlers.set(eventName as GeomanEventName, boundHandler);
+        map.on(eventName, boundHandler);
+      }
+    });
+  }
 
-    // Remove event listeners
-    this.removeEventListeners(map);
-
-    // Disable Geoman
-    (map as any).pm.disable();
+  private cleanup(map: LeafletMap): void {
+    // Remove event handlers
+    this.eventHandlers.forEach((handler, eventName) => {
+      map.off(eventName, handler);
+    });
+    this.eventHandlers.clear();
 
     // Call unmounted callback
     if (this.options.onUnmounted) {
       this.options.onUnmounted(map);
     }
+  }
 
-    return this;
-  },
-
-  addEventListeners(map: LeafletMap) {
-    const events = {
-      'pm:create': this.options.onCreated,
-      'pm:edit': this.options.onEdited,
-      'pm:remove': this.options.onRemoved,
-      'pm:dragstart': this.options.onDragStart,
-      'pm:drag': this.options.onDrag,
-      'pm:dragend': this.options.onDragEnd,
-      'pm:cut': this.options.onCut,
-      'pm:rotate': this.options.onRotate,
-      'pm:drawstart': this.options.onDrawStart,
-      'pm:drawstop': this.options.onDrawStop,
-      'pm:drawvertex': this.options.onDrawVertex,
-      'pm:editstart': this.options.onEditStart,
-      'pm:editstop': this.options.onEditStop,
-      'pm:editvertex': this.options.onEditVertex,
-      'pm:editmove': this.options.onEditMove,
-      'pm:editresize': this.options.onEditResize,
-      'pm:removestart': this.options.onRemoveStart,
-      'pm:removestop': this.options.onRemoveStop,
-      'pm:globaldrawmodetoggled': this.options.onGlobalDrawModeToggled,
-      'pm:globaldragmodetoggled': this.options.onGlobalDragModeToggled,
-      'pm:globalremovalmodetoggled': this.options.onGlobalRemovalModeToggled,
-      'pm:globalcutmodetoggled': this.options.onGlobalCutModeToggled,
-      'pm:globalrotatemodetoggled': this.options.onGlobalRotateModeToggled,
-    };
-
-    Object.entries(events).forEach(([event, handler]) => {
-      if (handler) {
-        const boundHandler = handler.bind(this);
-        map.on(event, boundHandler as any);
-        this.eventHandlers.set(event, boundHandler);
-      }
-    });
-  },
-
-  removeEventListeners(map: LeafletMap) {
-    this.eventHandlers.forEach((handler, event) => {
-      map.off(event, handler as any);
-    });
-    this.eventHandlers.clear();
-  },
-
-  updateOptions(newOptions: Partial<LeafletDrawNextProps>) {
-    if (!this._map) return;
-
-    // Update draw options
-    if (newOptions.draw) {
-      Object.entries(newOptions.draw).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
-          (this._map as any).pm.setDrawOptions(key as any, value);
-        }
-      });
-    }
-
-    // Update edit options
-    if (newOptions.edit) {
-      Object.entries(newOptions.edit).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
-          (this._map as any).pm.setEditOptions(key as any, value);
-        }
-      });
-    }
-
-    // Update toolbar options
-    if (newOptions.toolbar) {
-      (this._map as any).pm.setToolbarOptions(newOptions.toolbar);
+  // Public methods for programmatic control
+  enableDraw(options?: GeomanDrawOptions): void {
+    if (this._map) {
+      this._map.pm.enableDraw(options);
     }
   }
-});
 
-// Create the control instance
+  disableDraw(): void {
+    if (this._map) {
+      this._map.pm.disableDraw();
+    }
+  }
+
+  enableEdit(options?: GeomanEditOptions): void {
+    if (this._map) {
+      this._map.pm.enableEdit(options);
+    }
+  }
+
+  disableEdit(): void {
+    if (this._map) {
+      this._map.pm.disableEdit();
+    }
+  }
+
+  enableRemove(): void {
+    if (this._map) {
+      this._map.pm.enableRemove();
+    }
+  }
+
+  disableRemove(): void {
+    if (this._map) {
+      this._map.pm.disableRemove();
+    }
+  }
+
+  enableDrag(): void {
+    if (this._map) {
+      this._map.pm.enableDrag();
+    }
+  }
+
+  disableDrag(): void {
+    if (this._map) {
+      this._map.pm.disableDrag();
+    }
+  }
+
+  enableCut(): void {
+    if (this._map) {
+      this._map.pm.enableCut();
+    }
+  }
+
+  disableCut(): void {
+    if (this._map) {
+      this._map.pm.disableCut();
+    }
+  }
+
+  enableRotate(): void {
+    if (this._map) {
+      this._map.pm.enableRotate();
+    }
+  }
+
+  disableRotate(): void {
+    if (this._map) {
+      this._map.pm.disableRotate();
+    }
+  }
+
+  getGeomanLayers(): any[] {
+    return this._map ? this._map.pm.getGeomanLayers() : [];
+  }
+
+  removeGeomanLayers(): void {
+    if (this._map) {
+      this._map.pm.removeGeomanLayers();
+    }
+  }
+}
+
 const createLeafletDrawNextInstance = (props: LeafletDrawNextProps) => {
   return new LeafletDrawNextControl(props);
 };
 
-// Export the React component
 export const LeafletDrawNext = createControlComponent(createLeafletDrawNextInstance);
 
 export default LeafletDrawNext;
