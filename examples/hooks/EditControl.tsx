@@ -42,21 +42,23 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
 
   return (
     <FeatureGroup ref={ref}>
-      <EditControl
-        position="topright"
-        onEdited={handleChange}
-        onCreated={handleChange}
-        onDeleted={handleChange}
-        draw={{
-          rectangle: false,
-          circle: true,
-          polyline: true,
-          polygon: true,
-          marker: false,
-          circlemarker: false,
-        }}
-        featureGroup={ref.current}
-      />
+      {ref.current && (
+        <EditControl
+          position="topright"
+          onEdited={handleChange}
+          onCreated={handleChange}
+          onDeleted={handleChange}
+          draw={{
+            rectangle: false,
+            circle: true,
+            polyline: true,
+            polygon: true,
+            marker: false,
+            circlemarker: false,
+          }}
+          featureGroup={ref.current}
+        />
+      )}
     </FeatureGroup>
   );
 }

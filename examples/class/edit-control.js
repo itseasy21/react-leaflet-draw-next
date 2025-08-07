@@ -78,6 +78,7 @@ export default class EditControlExample extends Component {
   };
 
   render() {
+    const fgInstance = this.featureGroupRef.current;
     return (
       <MapContainer center={[37.8189, -122.4786]} zoom={13} zoomControl={false}>
         <TileLayer
@@ -85,21 +86,23 @@ export default class EditControlExample extends Component {
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
         <FeatureGroup ref={this.featureGroupRef}>
-          <EditControl
-            position="topright"
-            onEdited={this._onEdited}
-            onCreated={this._onCreated}
-            onDeleted={this._onDeleted}
-            onMounted={this._onMounted}
-            onEditStart={this._onEditStart}
-            onEditStop={this._onEditStop}
-            onDeleteStart={this._onDeleteStart}
-            onDeleteStop={this._onDeleteStop}
-            draw={{
-              rectangle: false,
-            }}
-            featureGroup={this.featureGroupRef.current && this.featureGroupRef.current._leaflet_id ? this.featureGroupRef.current : null}
-          />
+          {fgInstance && fgInstance._leaflet_id && (
+            <EditControl
+              position="topright"
+              onEdited={this._onEdited}
+              onCreated={this._onCreated}
+              onDeleted={this._onDeleted}
+              onMounted={this._onMounted}
+              onEditStart={this._onEditStart}
+              onEditStop={this._onEditStop}
+              onDeleteStart={this._onDeleteStart}
+              onDeleteStop={this._onDeleteStop}
+              draw={{
+                rectangle: false,
+              }}
+              featureGroup={fgInstance}
+            />
+          )}
         </FeatureGroup>
       </MapContainer>
     );
