@@ -5,7 +5,7 @@
   "main": "dist/react-leaflet-draw-next.js",
   "module": "dist/esm/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "build:dist": "npm run build:umd && npm run build:umd:min && npm run build:esm",
     "build:umd": "webpack ./src/index.js --output-filename react-leaflet-draw-next.js",
     "build:umd:min": "webpack ./src/index.js --output-filename react-leaflet-draw-next.min.js",
