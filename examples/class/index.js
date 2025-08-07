@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 
 const example = (
   <div>
-  <h1>React-Leaflet-Draw-Next example</h1>
+    <h1>React-Leaflet-Draw example</h1>
     <EditControlExample onChange={onChange} />
   </div>
 );

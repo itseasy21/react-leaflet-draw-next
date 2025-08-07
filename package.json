@@ -1,16 +1,16 @@
 {
-  "name": "react-leaflet-draw-next",
-  "version": "1.0.0",
-  "description": "Next-generation React component for Leaflet.draw, extending react-leaflet-draw with modern features and support.",
-  "main": "dist/react-leaflet-draw-next.js",
+  "name": "react-leaflet-draw",
+  "version": "0.20.6",
+  "description": "React component for leaflet-draw",
+  "main": "dist/react-leaflet-draw.js",
   "module": "dist/esm/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build:dist": "npm run build:umd && npm run build:umd:min && npm run build:esm",
-    "build:umd": "webpack ./src/index.js --output-filename react-leaflet-draw-next.js",
-    "build:umd:min": "webpack ./src/index.js --output-filename react-leaflet-draw-next.min.js",
+    "build:umd": "webpack ./src/index.js --output-filename react-leaflet-draw.js",
+    "build:umd:min": "webpack ./src/index.js --output-filename react-leaflet-draw.min.js",
     "build:esm": "babel src --out-dir dist/esm",
-    "build": "npm run build:dist",
+    "build": " npm run build:dist",
     "prepublish": "npm run build",
     "version": "npm run build",
     "postversion": "git push && git push --tags",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/itseasy21/react-leaflet-draw-next.git"
+    "url": "git+ssh://git@github.com/alex3165/react-leaflet-draw.git"
   },
   "files": [
     "dist",
@@ -32,33 +32,18 @@
     "draw",
     "editor"
   ],
-  "contributors": [
-    {
-      "name": "Alexandre Rieux"
-    },
-    {
-      "name": "Shubham Mathur"
-    }
-  ],
-  "author": {
-    "name": "Shubham Mathur",
-    "email": "itseasy21@gmail.com"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=6.0.0"
-  },
+  "author": "Alexandre Rieux",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/itseasy21/react-leaflet-draw-next/issues"
+    "url": "https://github.com/alex3165/react-leaflet-draw/issues"
   },
-  "homepage": "https://github.com/itseasy21/react-leaflet-draw-next#readme",
+  "homepage": "https://github.com/alex3165/react-leaflet-draw#readme",
   "types": "src/index.d.ts",
   "peerDependencies": {
-    "leaflet": "^1.8.0",
+    "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "prop-types": "^15.5.2",
-    "react": "^19.1.0",
+    "react": "^19.0.0",
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
@@ -68,11 +53,11 @@
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.1",
-    "@changesets/cli": "^2.29.5",
+    "@react-leaflet/core": "^2.0.0",
     "@types/leaflet": "^1.9.16",
     "@types/leaflet-draw": "^1.0.11",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "babel-loader": "^8.1.0",
     "eslint": "^8.17.0",
     "eslint-plugin-react": "^7.21.5",
