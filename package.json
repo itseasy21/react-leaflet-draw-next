@@ -1,6 +1,6 @@
 {
   "name": "react-leaflet-draw-next",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Next-generation React component for Leaflet.draw, extending react-leaflet-draw with modern features and support.",
   "main": "dist/react-leaflet-draw-next.js",
   "module": "dist/esm/index.js",
