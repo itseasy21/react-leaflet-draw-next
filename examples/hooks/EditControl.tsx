@@ -11,8 +11,12 @@ interface Props {
 
 export default function EditControlFC({ geojson, setGeojson }: Props) {
   const ref = React.useRef<L.FeatureGroup>(null);
+  const [featureGroupReady, setFeatureGroupReady] = React.useState(false);
 
   React.useEffect(() => {
+    if (ref.current && !featureGroupReady) {
+      setFeatureGroupReady(true);
+    }
     if (ref.current?.getLayers().length === 0 && geojson) {
       L.geoJSON(geojson).eachLayer((layer) => {
         if (
@@ -30,11 +34,10 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
         }
       });
     }
-  }, [geojson]);
+  }, [geojson, featureGroupReady]);
 
   const handleChange = () => {
     const geo = ref.current?.toGeoJSON();
-    console.log(geo);
     if (geo?.type === 'FeatureCollection') {
       setGeojson(geo);
     }
@@ -42,20 +45,23 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
 
   return (
     <FeatureGroup ref={ref}>
-      <EditControl
-        position="topright"
-        onEdited={handleChange}
-        onCreated={handleChange}
-        onDeleted={handleChange}
-        draw={{
-          rectangle: false,
-          circle: true,
-          polyline: true,
-          polygon: true,
-          marker: false,
-          circlemarker: false,
-        }}
-      />
+      {featureGroupReady && ref.current && (
+        <EditControl
+          position="topright"
+          onEdited={handleChange}
+          onCreated={handleChange}
+          onDeleted={handleChange}
+          draw={{
+            rectangle: false,
+            circle: true,
+            polyline: true,
+            polygon: true,
+            marker: false,
+            circlemarker: false,
+          }}
+          featureGroup={ref.current}
+        />
+      )}
     </FeatureGroup>
   );
 }

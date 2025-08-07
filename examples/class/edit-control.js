@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { MapContainer, TileLayer, Circle, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from '../../src';
@@ -20,6 +20,7 @@ L.Icon.Default.mergeOptions({
 let polyline;
 
 export default class EditControlExample extends Component {
+  featureGroupRef = createRef();
   // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
 
   _onEdited = (e) => {
@@ -77,31 +78,31 @@ export default class EditControlExample extends Component {
   };
 
   render() {
+    const fgInstance = this.featureGroupRef.current;
     return (
       <MapContainer center={[37.8189, -122.4786]} zoom={13} zoomControl={false}>
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-        <FeatureGroup
-          ref={(reactFGref) => {
-            this._onFeatureGroupReady(reactFGref);
-          }}
-        >
-          <EditControl
-            position="topright"
-            onEdited={this._onEdited}
-            onCreated={this._onCreated}
-            onDeleted={this._onDeleted}
-            onMounted={this._onMounted}
-            onEditStart={this._onEditStart}
-            onEditStop={this._onEditStop}
-            onDeleteStart={this._onDeleteStart}
-            onDeleteStop={this._onDeleteStop}
-            draw={{
-              rectangle: false,
-            }}
-          />
+        <FeatureGroup ref={this.featureGroupRef}>
+          {fgInstance && fgInstance._leaflet_id && (
+            <EditControl
+              position="topright"
+              onEdited={this._onEdited}
+              onCreated={this._onCreated}
+              onDeleted={this._onDeleted}
+              onMounted={this._onMounted}
+              onEditStart={this._onEditStart}
+              onEditStop={this._onEditStop}
+              onDeleteStart={this._onDeleteStart}
+              onDeleteStop={this._onDeleteStop}
+              draw={{
+                rectangle: false,
+              }}
+              featureGroup={fgInstance}
+            />
+          )}
         </FeatureGroup>
       </MapContainer>
     );

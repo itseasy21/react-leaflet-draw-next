@@ -1,8 +1,8 @@
 import { PropTypes } from 'prop-types';
-import Draw from 'leaflet-draw'; // eslint-disable-line
+import 'leaflet-draw'; // eslint-disable-line
 import isEqual from 'fast-deep-equal';
 import React, { useRef } from 'react';
-import { useLeafletContext } from '@react-leaflet/core';
+import { useMap } from 'react-leaflet';
 
 import leaflet, { Map, Control } from 'leaflet';
 
@@ -22,20 +22,20 @@ const eventHandlers = {
 };
 
 function EditControl(props) {
-  const context = useLeafletContext();
+  const map = useMap();
   const drawRef = useRef();
   const propsRef = useRef(props);
 
   function onDrawCreate(e) {
-    const { onCreated } = props;
-    const container = context.layerContainer || context.map;
-    container.addLayer(e.layer);
+    const { onCreated, featureGroup } = props;
+    if (featureGroup) {
+      featureGroup.addLayer(e.layer);
+    }
     onCreated && onCreated(e);
   }
 
   React.useEffect(() => {
-    const { map } = context;
-    const { onMounted } = props;
+    const { onMounted, featureGroup } = props;
 
     for (const key in eventHandlers) {
       if (Object.prototype.hasOwnProperty.call(eventHandlers, key)) {
@@ -51,7 +51,7 @@ function EditControl(props) {
       }
     }
     map.on(leaflet.Draw.Event.CREATED, onDrawCreate);
-    drawRef.current = createDrawElement(props, context);
+    drawRef.current = createDrawElement(props, featureGroup);
     map.addControl(drawRef.current);
     onMounted && onMounted(drawRef.current);
 
@@ -59,27 +59,29 @@ function EditControl(props) {
       map.off(leaflet.Draw.Event.CREATED, onDrawCreate);
 
       for (const key in eventHandlers) {
-        if (props[key]) {
+        if (Object.prototype.hasOwnProperty.call(eventHandlers, key) && props[key]) {
           map.off(eventHandlers[key], props[key]);
         }
       }
 
-      drawRef.current.remove(map);
+      if (drawRef.current) {
+        drawRef.current.remove(map);
+      }
     };
-  }, [props.onCreated, props.onDeleted, props.onEdited]);
+  }, [props.onCreated, props.onDeleted, props.onEdited, props.featureGroup]);
 
   React.useEffect(() => {
     if (
       isEqual(props.draw, propsRef.current.draw) &&
       isEqual(props.edit, propsRef.current.edit) &&
-      props.position === propsRef.current.position
+      props.position === propsRef.current.position &&
+      props.featureGroup === propsRef.current.featureGroup
     ) {
       return undefined;
     }
-    const { map } = context;
 
     drawRef.current.remove(map);
-    drawRef.current = createDrawElement(props, context);
+    drawRef.current = createDrawElement(props, props.featureGroup);
     drawRef.current.addTo(map);
 
     const { onMounted } = props;
@@ -94,6 +96,7 @@ function EditControl(props) {
     props.draw, 
     props.edit, 
     props.position, 
+    props.featureGroup,
     props.onCreated,
     props.onDeleted,
     props.onEdited
@@ -102,13 +105,12 @@ function EditControl(props) {
   return null;
 }
 
-function createDrawElement(props, context) {
-  const { layerContainer } = context;
+function createDrawElement(props, featureGroup) {
   const { draw, edit, position } = props;
   const options = {
     edit: {
       ...edit,
-      featureGroup: layerContainer,
+      featureGroup: featureGroup,
     },
   };
 
@@ -149,13 +151,7 @@ EditControl.propTypes = {
     'bottomright',
     'bottomleft',
   ]),
-  leaflet: PropTypes.shape({
-    map: PropTypes.instanceOf(Map),
-    layerContainer: PropTypes.shape({
-      addLayer: PropTypes.func.isRequired,
-      removeLayer: PropTypes.func.isRequired,
-    }),
-  }),
+  featureGroup: PropTypes.object, // L.FeatureGroup instance
 };
 
 export default EditControl;
