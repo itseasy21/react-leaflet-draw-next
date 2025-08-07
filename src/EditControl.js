@@ -26,8 +26,11 @@ function EditControl(props) {
   const drawRef = useRef();
   const propsRef = useRef(props);
 
+  console.log('[EditControl] Render', { featureGroup: props.featureGroup });
+
   const onDrawCreate = (e) => {
     const { onCreated, featureGroup } = props;
+    console.log('[EditControl] onDrawCreate', { featureGroup });
     if (featureGroup) {
       featureGroup.addLayer(e.layer);
     }
@@ -36,6 +39,7 @@ function EditControl(props) {
 
   React.useEffect(() => {
     const { onMounted, featureGroup } = props;
+    console.log('[EditControl] useEffect (mount/update)', { featureGroup });
 
     for (const key in eventHandlers) {
       map.on(eventHandlers[key], (evt) => {
@@ -52,6 +56,7 @@ function EditControl(props) {
     drawRef.current = createDrawElement(props, featureGroup);
     map.addControl(drawRef.current);
     onMounted && onMounted(drawRef.current);
+    console.log('[EditControl] Draw control added', { drawControl: drawRef.current });
 
     return () => {
       map.off(leaflet.Draw.Event.CREATED, onDrawCreate);
@@ -62,7 +67,10 @@ function EditControl(props) {
         }
       }
 
-      drawRef.current.remove(map);
+      if (drawRef.current) {
+        drawRef.current.remove(map);
+        console.log('[EditControl] Draw control removed', { drawControl: drawRef.current });
+      }
     };
   }, [props.onCreated, props.onDeleted, props.onEdited, props.featureGroup]);
 
@@ -75,6 +83,7 @@ function EditControl(props) {
     ) {
       return;
     }
+    console.log('[EditControl] useEffect (draw/edit/position/featureGroup changed)', { featureGroup: props.featureGroup });
 
     drawRef.current.remove(map);
     drawRef.current = createDrawElement(props, props.featureGroup);
@@ -82,9 +91,11 @@ function EditControl(props) {
 
     const { onMounted } = props;
     onMounted && onMounted(drawRef.current);
+    console.log('[EditControl] Draw control re-added', { drawControl: drawRef.current });
 
     return () => {
       drawRef.current.remove(map);
+      console.log('[EditControl] Draw control removed (cleanup)', { drawControl: drawRef.current });
     };
   }, [
     props.draw, 

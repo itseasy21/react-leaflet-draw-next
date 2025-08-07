@@ -13,6 +13,11 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
   const ref = React.useRef<L.FeatureGroup>(null);
 
   React.useEffect(() => {
+    console.log('[Hooks Example] FeatureGroup ref', ref.current);
+    if (ref.current) {
+      // Log the underlying leafletElement if present
+      console.log('[Hooks Example] FeatureGroup leafletElement', ref.current.leafletElement);
+    }
     if (ref.current?.getLayers().length === 0 && geojson) {
       L.geoJSON(geojson).eachLayer((layer) => {
         if (
