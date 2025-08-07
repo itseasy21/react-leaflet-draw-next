@@ -1,11 +1,11 @@
-# React-Leaflet-Draw
+# React-Leaflet-Draw-Next
 
-React component build on top of [React-Leaflet](https://github.com/PaulLeCam/react-leaflet) that integrate [leaflet-draw](https://github.com/Leaflet/Leaflet.draw) feature.
+React component build on top of [React-Leaflet](https://github.com/PaulLeCam/react-leaflet) that integrate [leaflet-draw](https://github.com/Leaflet/Leaflet.draw) feature. This is the next-generation version with React 19 and react-leaflet v5 support.
 
 ## Install
 
 ```
-npm install react-leaflet-draw
+npm install react-leaflet-draw-next
 ```
 
 ## Getting started
@@ -32,30 +32,44 @@ It's important to wrap EditControl component into FeatureGroup component from `r
 The elements you draw will be added to this FeatureGroup layer, when you hit edit button only items in this layer will be edited.
 
 ```jsx
-import { Map, TileLayer, FeatureGroup, Circle } from 'react-leaflet';
-import { EditControl } from "react-leaflet-draw"
+import { MapContainer, TileLayer, FeatureGroup, Circle } from 'react-leaflet';
+import { EditControl } from "react-leaflet-draw-next"
 
 const Component = () => (
-  <FeatureGroup>
-    <EditControl
-      position='topright'
-      onEdited={this._onEditPath}
-      onCreated={this._onCreate}
-      onDeleted={this._onDeleted}
-      draw={{
-        rectangle: false
-      }}
+  <MapContainer center={[51.51, -0.06]} zoom={13}>
+    <TileLayer
+      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
     />
-    <Circle center={[51.51, -0.06]} radius={200} />
-  </FeatureGroup>
+    <FeatureGroup>
+      <EditControl
+        position='topright'
+        onEdited={this._onEditPath}
+        onCreated={this._onCreate}
+        onDeleted={this._onDeleted}
+        draw={{
+          rectangle: false
+        }}
+      />
+      <Circle center={[51.51, -0.06]} radius={200} />
+    </FeatureGroup>
+  </MapContainer>
 );
 ```
 
 For more details on how to use this plugin check out the examples [example](examples).
-- `yarn example:class` to compile the class example
-- `yarn example:hooks` to compile and run the hooks example
+- `npm run example:class` to compile the class example
+- `npm run example:hooks` to compile and run the hooks example
 
 You can pass more options on draw object, this informations can be found [here](https://github.com/Leaflet/Leaflet.draw#user-content-example-leafletdraw-config)
+
+## React 19 and react-leaflet v5 Compatibility
+
+This package is specifically designed for React 19 and react-leaflet v5. Key changes from the original react-leaflet-draw:
+
+- Uses `MapContainer` instead of `Map`
+- Requires passing the `featureGroup` prop to `EditControl` with the actual Leaflet FeatureGroup instance
+- Compatible with the new hooks-based architecture of react-leaflet v5
 
 ## EditControl API
 
@@ -66,6 +80,7 @@ You can pass more options on draw object, this informations can be found [here](
 |position        |string                      |control group position                                |
 |draw            |object <DrawOptions>        |enable/disable draw controls                          |
 |edit            |object <EditPolyOptions>    |enable/disable edit controls                          |
+|featureGroup    |object                      |L.FeatureGroup instance (required for react-leaflet v5)|
 |onEdited        |function                    |hook to leaflet-draw's `draw:edited` event            |
 |onCreated       |function                    |hook to leaflet-draw's `draw:created` event           |
 |onDeleted       |function                    |hook to leaflet-draw's `draw:deleted` event           |

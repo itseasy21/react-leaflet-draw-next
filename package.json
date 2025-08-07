@@ -1,14 +1,14 @@
 {
-  "name": "react-leaflet-draw",
+  "name": "react-leaflet-draw-next",
   "version": "0.20.6",
   "description": "React component for leaflet-draw",
-  "main": "dist/react-leaflet-draw.js",
+  "main": "dist/react-leaflet-draw-next.js",
   "module": "dist/esm/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dist": "npm run build:umd && npm run build:umd:min && npm run build:esm",
-    "build:umd": "webpack ./src/index.js --output-filename react-leaflet-draw.js",
-    "build:umd:min": "webpack ./src/index.js --output-filename react-leaflet-draw.min.js",
+    "build:umd": "webpack ./src/index.js --output-filename react-leaflet-draw-next.js",
+    "build:umd:min": "webpack ./src/index.js --output-filename react-leaflet-draw-next.min.js",
     "build:esm": "babel src --out-dir dist/esm",
     "build": " npm run build:dist",
     "prepublish": "npm run build",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/alex3165/react-leaflet-draw.git"
+    "url": "git+ssh://git@github.com/itseasy21/react-leaflet-draw-next.git"
   },
   "files": [
     "dist",
@@ -35,9 +35,9 @@
   "author": "Alexandre Rieux",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alex3165/react-leaflet-draw/issues"
+    "url": "https://github.com/itseasy21/react-leaflet-draw-next/issues"
   },
-  "homepage": "https://github.com/alex3165/react-leaflet-draw#readme",
+  "homepage": "https://github.com/itseasy21/react-leaflet-draw-next#readme",
   "types": "src/index.d.ts",
   "peerDependencies": {
     "leaflet": "^1.9.4",
