@@ -11,8 +11,12 @@ interface Props {
 
 export default function EditControlFC({ geojson, setGeojson }: Props) {
   const ref = React.useRef<L.FeatureGroup>(null);
+  const [featureGroupReady, setFeatureGroupReady] = React.useState(false);
 
   React.useEffect(() => {
+    if (ref.current && !featureGroupReady) {
+      setFeatureGroupReady(true);
+    }
     console.log('[Hooks Example] FeatureGroup ref', ref.current);
     if (ref.current?.getLayers().length === 0 && geojson) {
       L.geoJSON(geojson).eachLayer((layer) => {
@@ -31,7 +35,7 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
         }
       });
     }
-  }, [geojson]);
+  }, [geojson, featureGroupReady]);
 
   const handleChange = () => {
     const geo = ref.current?.toGeoJSON();
@@ -43,29 +47,23 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
 
   return (
     <FeatureGroup ref={ref}>
-      {(() => {
-        console.log('[Hooks Example] Render condition check:', { 
-          refCurrent: ref.current, 
-          shouldRender: !!ref.current 
-        });
-        return ref.current && (
-          <EditControl
-            position="topright"
-            onEdited={handleChange}
-            onCreated={handleChange}
-            onDeleted={handleChange}
-            draw={{
-              rectangle: false,
-              circle: true,
-              polyline: true,
-              polygon: true,
-              marker: false,
-              circlemarker: false,
-            }}
-            featureGroup={ref.current}
-          />
-        );
-      })()}
+      {featureGroupReady && ref.current && (
+        <EditControl
+          position="topright"
+          onEdited={handleChange}
+          onCreated={handleChange}
+          onDeleted={handleChange}
+          draw={{
+            rectangle: false,
+            circle: true,
+            polyline: true,
+            polygon: true,
+            marker: false,
+            circlemarker: false,
+          }}
+          featureGroup={ref.current}
+        />
+      )}
     </FeatureGroup>
   );
 }
