@@ -43,23 +43,29 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
 
   return (
     <FeatureGroup ref={ref}>
-      {ref.current && (
-        <EditControl
-          position="topright"
-          onEdited={handleChange}
-          onCreated={handleChange}
-          onDeleted={handleChange}
-          draw={{
-            rectangle: false,
-            circle: true,
-            polyline: true,
-            polygon: true,
-            marker: false,
-            circlemarker: false,
-          }}
-          featureGroup={ref.current}
-        />
-      )}
+      {(() => {
+        console.log('[Hooks Example] Render condition check:', { 
+          refCurrent: ref.current, 
+          shouldRender: !!ref.current 
+        });
+        return ref.current && (
+          <EditControl
+            position="topright"
+            onEdited={handleChange}
+            onCreated={handleChange}
+            onDeleted={handleChange}
+            draw={{
+              rectangle: false,
+              circle: true,
+              polyline: true,
+              polygon: true,
+              marker: false,
+              circlemarker: false,
+            }}
+            featureGroup={ref.current}
+          />
+        );
+      })()}
     </FeatureGroup>
   );
 }
