@@ -26,27 +26,29 @@ function EditControl(props) {
   const drawRef = useRef();
   const propsRef = useRef(props);
 
-  const onDrawCreate = (e) => {
+  function onDrawCreate(e) {
     const { onCreated, featureGroup } = props;
     if (featureGroup) {
       featureGroup.addLayer(e.layer);
     }
     onCreated && onCreated(e);
-  };
+  }
 
   React.useEffect(() => {
     const { onMounted, featureGroup } = props;
 
     for (const key in eventHandlers) {
-      map.on(eventHandlers[key], (evt) => {
-        let handlers = Object.keys(eventHandlers).filter(
-          (handler) => eventHandlers[handler] === evt.type
-        );
-        if (handlers.length === 1) {
-          let handler = handlers[0];
-          props[handler] && props[handler](evt);
-        }
-      });
+      if (Object.prototype.hasOwnProperty.call(eventHandlers, key)) {
+        map.on(eventHandlers[key], (evt) => {
+          let handlers = Object.keys(eventHandlers).filter(
+            (handler) => eventHandlers[handler] === evt.type
+          );
+          if (handlers.length === 1) {
+            let handler = handlers[0];
+            props[handler] && props[handler](evt);
+          }
+        });
+      }
     }
     map.on(leaflet.Draw.Event.CREATED, onDrawCreate);
     drawRef.current = createDrawElement(props, featureGroup);
@@ -57,7 +59,7 @@ function EditControl(props) {
       map.off(leaflet.Draw.Event.CREATED, onDrawCreate);
 
       for (const key in eventHandlers) {
-        if (props[key]) {
+        if (Object.prototype.hasOwnProperty.call(eventHandlers, key) && props[key]) {
           map.off(eventHandlers[key], props[key]);
         }
       }
@@ -75,7 +77,7 @@ function EditControl(props) {
       props.position === propsRef.current.position &&
       props.featureGroup === propsRef.current.featureGroup
     ) {
-      return;
+      return undefined;
     }
 
     drawRef.current.remove(map);
@@ -86,7 +88,9 @@ function EditControl(props) {
     onMounted && onMounted(drawRef.current);
 
     return () => {
-      drawRef.current.remove(map);
+      if (drawRef.current) {
+        drawRef.current.remove(map);
+      }
     };
   }, [
     props.draw, 
