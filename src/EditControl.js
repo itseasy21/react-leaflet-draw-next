@@ -1,7 +1,6 @@
-import { PropTypes } from 'prop-types';
 import Draw from 'leaflet-draw'; // eslint-disable-line
 import isEqual from 'fast-deep-equal';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useLeafletContext } from '@react-leaflet/core';
 
 import leaflet, { Map, Control } from 'leaflet';
@@ -26,47 +25,78 @@ function EditControl(props) {
   const drawRef = useRef();
   const propsRef = useRef(props);
 
-  const onDrawCreate = (e) => {
-    const { onCreated } = props;
+  // Update props ref when props change
+  useEffect(() => {
+    propsRef.current = props;
+  });
+
+  const onDrawCreate = useCallback((e) => {
+    const { onCreated } = propsRef.current;
     const container = context.layerContainer || context.map;
     container.addLayer(e.layer);
     onCreated && onCreated(e);
-  };
+  }, [context]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { map } = context;
-    const { onMounted } = props;
+    const { 
+      onMounted,
+      onCreated,
+      onDeleted,
+      onEdited,
+      onDrawStart,
+      onDrawStop,
+      onDrawVertex,
+      onEditStart,
+      onEditMove,
+      onEditResize,
+      onEditVertex,
+      onEditStop,
+      onDeleteStart,
+      onDeleteStop
+    } = props;
 
-    for (const key in eventHandlers) {
-      map.on(eventHandlers[key], (evt) => {
-        let handlers = Object.keys(eventHandlers).filter(
-          (handler) => eventHandlers[handler] === evt.type
-        );
-        if (handlers.length === 1) {
-          let handler = handlers[0];
-          props[handler] && props[handler](evt);
-        }
-      });
+    // Create event handlers map
+    const handlers = new Map();
+    
+    // Set up event handlers
+    for (const [propName, eventName] of Object.entries(eventHandlers)) {
+      if (props[propName]) {
+        const handler = (evt) => {
+          props[propName](evt);
+        };
+        handlers.set(eventName, handler);
+        map.on(eventName, handler);
+      }
     }
+
+    // Set up draw create handler
     map.on(leaflet.Draw.Event.CREATED, onDrawCreate);
+    
+    // Create and add draw control
     drawRef.current = createDrawElement(props, context);
     map.addControl(drawRef.current);
     onMounted && onMounted(drawRef.current);
 
+    // Cleanup function
     return () => {
+      // Remove draw create handler
       map.off(leaflet.Draw.Event.CREATED, onDrawCreate);
 
-      for (const key in eventHandlers) {
-        if (props[key]) {
-          map.off(eventHandlers[key], props[key]);
-        }
+      // Remove all event handlers
+      for (const [eventName, handler] of handlers) {
+        map.off(eventName, handler);
       }
 
-      drawRef.current.remove(map);
+      // Remove draw control
+      if (drawRef.current) {
+        drawRef.current.remove();
+      }
     };
-  }, [props.onCreated, props.onDeleted, props.onEdited]);
+  }, [context, onDrawCreate]);
 
-  React.useEffect(() => {
+  // Handle draw/edit/position changes
+  useEffect(() => {
     if (
       isEqual(props.draw, propsRef.current.draw) &&
       isEqual(props.edit, propsRef.current.edit) &&
@@ -74,26 +104,18 @@ function EditControl(props) {
     ) {
       return;
     }
+    
     const { map } = context;
 
-    drawRef.current.remove(map);
-    drawRef.current = createDrawElement(props, context);
-    drawRef.current.addTo(map);
+    if (drawRef.current) {
+      drawRef.current.remove();
+      drawRef.current = createDrawElement(props, context);
+      drawRef.current.addTo(map);
 
-    const { onMounted } = props;
-    onMounted && onMounted(drawRef.current);
-
-    return () => {
-      drawRef.current.remove(map);
-    };
-  }, [
-    props.draw, 
-    props.edit, 
-    props.position, 
-    props.onCreated,
-    props.onDeleted,
-    props.onEdited
-  ]);
+      const { onMounted } = props;
+      onMounted && onMounted(drawRef.current);
+    }
+  }, [props.draw, props.edit, props.position, context, props.onMounted]);
 
   return null;
 }
@@ -118,40 +140,5 @@ function createDrawElement(props, context) {
 
   return new Control.Draw(options);
 }
-
-EditControl.propTypes = {
-  ...Object.keys(eventHandlers).reduce((acc, val) => {
-    acc[val] = PropTypes.func;
-    return acc;
-  }, {}),
-  onCreated: PropTypes.func,
-  onMounted: PropTypes.func,
-  draw: PropTypes.shape({
-    polyline: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    polygon: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    rectangle: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    circle: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    marker: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-  }),
-  edit: PropTypes.shape({
-    edit: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    remove: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    poly: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    allowIntersection: PropTypes.bool,
-  }),
-  position: PropTypes.oneOf([
-    'topright',
-    'topleft',
-    'bottomright',
-    'bottomleft',
-  ]),
-  leaflet: PropTypes.shape({
-    map: PropTypes.instanceOf(Map),
-    layerContainer: PropTypes.shape({
-      addLayer: PropTypes.func.isRequired,
-      removeLayer: PropTypes.func.isRequired,
-    }),
-  }),
-};
 
 export default EditControl;

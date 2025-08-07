@@ -7,7 +7,7 @@ import type {
 	DrawEvents,
 } from 'leaflet';
 
-interface EditControlProps {
+export interface EditControlProps {
 	onEdited?: (v: DrawEvents.Edited) => void;
 	onDrawStart?: (v: DrawEvents.DrawStart) => void;
 	onDrawStop?: (v: DrawEvents.DrawStop) => void;
@@ -22,9 +22,9 @@ interface EditControlProps {
 	onDeleteStop?: (v: DrawEvents.DeleteStop) => void;
 
 	onCreated?: (v: DrawEvents.Created) => void;
-	onMounted?: Function;
+	onMounted?: (drawControl: Control.Draw) => void;
 	edit?: Omit<Control.EditOptions, "featureGroup">;
-	draw: {
+	draw?: {
 		polyline?: DrawOptions.PolylineOptions | boolean;
 		polygon?: DrawOptions.PolygonOptions | boolean;
 		rectangle?: DrawOptions.RectangleOptions | boolean;
@@ -33,7 +33,8 @@ interface EditControlProps {
 		circlemarker?: DrawOptions.CircleOptions | boolean;
 	};
 
-	position: ControlPosition;
+	position?: ControlPosition;
 }
 
-export class EditControl extends React.Component<EditControlProps> {}
+declare const EditControl: React.FC<EditControlProps>;
+export default EditControl;
