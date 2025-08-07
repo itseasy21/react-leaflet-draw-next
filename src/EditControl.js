@@ -27,15 +27,15 @@ function EditControl(props) {
   const propsRef = useRef(props);
 
   const onDrawCreate = (e) => {
-    const { onCreated } = props;
-    // In react-leaflet v5, FeatureGroup is the layerContainer
-    const container = map._layers ? map : map; // fallback for custom containers
-    container.addLayer(e.layer);
+    const { onCreated, featureGroup } = props;
+    if (featureGroup) {
+      featureGroup.addLayer(e.layer);
+    }
     onCreated && onCreated(e);
   };
 
   React.useEffect(() => {
-    const { onMounted } = props;
+    const { onMounted, featureGroup } = props;
 
     for (const key in eventHandlers) {
       map.on(eventHandlers[key], (evt) => {
@@ -49,7 +49,7 @@ function EditControl(props) {
       });
     }
     map.on(leaflet.Draw.Event.CREATED, onDrawCreate);
-    drawRef.current = createDrawElement(props, map);
+    drawRef.current = createDrawElement(props, featureGroup);
     map.addControl(drawRef.current);
     onMounted && onMounted(drawRef.current);
 
@@ -64,19 +64,20 @@ function EditControl(props) {
 
       drawRef.current.remove(map);
     };
-  }, [props.onCreated, props.onDeleted, props.onEdited]);
+  }, [props.onCreated, props.onDeleted, props.onEdited, props.featureGroup]);
 
   React.useEffect(() => {
     if (
       isEqual(props.draw, propsRef.current.draw) &&
       isEqual(props.edit, propsRef.current.edit) &&
-      props.position === propsRef.current.position
+      props.position === propsRef.current.position &&
+      props.featureGroup === propsRef.current.featureGroup
     ) {
       return;
     }
 
     drawRef.current.remove(map);
-    drawRef.current = createDrawElement(props, map);
+    drawRef.current = createDrawElement(props, props.featureGroup);
     drawRef.current.addTo(map);
 
     const { onMounted } = props;
@@ -89,6 +90,7 @@ function EditControl(props) {
     props.draw, 
     props.edit, 
     props.position, 
+    props.featureGroup,
     props.onCreated,
     props.onDeleted,
     props.onEdited
@@ -97,14 +99,12 @@ function EditControl(props) {
   return null;
 }
 
-function createDrawElement(props, map) {
-  // In react-leaflet v5, the FeatureGroup is passed as a child, so we need to find it
-  // This is a simplification; in a real migration, you may need to pass the featureGroup explicitly
+function createDrawElement(props, featureGroup) {
   const { draw, edit, position } = props;
   const options = {
     edit: {
       ...edit,
-      featureGroup: map._layers ? map : map, // fallback for custom containers
+      featureGroup: featureGroup,
     },
   };
 
@@ -145,13 +145,7 @@ EditControl.propTypes = {
     'bottomright',
     'bottomleft',
   ]),
-  leaflet: PropTypes.shape({
-    map: PropTypes.instanceOf(Map),
-    layerContainer: PropTypes.shape({
-      addLayer: PropTypes.func.isRequired,
-      removeLayer: PropTypes.func.isRequired,
-    }),
-  }),
+  featureGroup: PropTypes.object, // L.FeatureGroup instance
 };
 
 export default EditControl;

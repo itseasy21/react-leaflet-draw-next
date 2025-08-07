@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { MapContainer, TileLayer, Circle, FeatureGroup } from 'react-leaflet';
 import L from 'leaflet';
 import { EditControl } from '../../src';
@@ -20,6 +20,7 @@ L.Icon.Default.mergeOptions({
 let polyline;
 
 export default class EditControlExample extends Component {
+  featureGroupRef = createRef();
   // see http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw-event for leaflet-draw events doc
 
   _onEdited = (e) => {
@@ -83,11 +84,7 @@ export default class EditControlExample extends Component {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-        <FeatureGroup
-          ref={(reactFGref) => {
-            this._onFeatureGroupReady(reactFGref);
-          }}
-        >
+        <FeatureGroup ref={this.featureGroupRef}>
           <EditControl
             position="topright"
             onEdited={this._onEdited}
@@ -101,6 +98,7 @@ export default class EditControlExample extends Component {
             draw={{
               rectangle: false,
             }}
+            featureGroup={this.featureGroupRef.current && this.featureGroupRef.current._leaflet_id ? this.featureGroupRef.current : null}
           />
         </FeatureGroup>
       </MapContainer>

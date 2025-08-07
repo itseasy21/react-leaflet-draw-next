@@ -55,6 +55,7 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
           marker: false,
           circlemarker: false,
         }}
+        featureGroup={ref.current}
       />
     </FeatureGroup>
   );
