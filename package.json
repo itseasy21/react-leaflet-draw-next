@@ -1,7 +1,7 @@
 {
   "name": "react-leaflet-draw-next",
-  "version": "0.20.6",
-  "description": "React component for leaflet-draw",
+  "version": "1.0.0",
+  "description": "Next-generation React component for Leaflet.draw, extending react-leaflet-draw with modern features and support.",
   "main": "dist/react-leaflet-draw-next.js",
   "module": "dist/esm/index.js",
   "scripts": {
@@ -32,7 +32,18 @@
     "draw",
     "editor"
   ],
-  "author": "Alexandre Rieux",
+  "contributors": [
+    {
+      "name": "Alexandre Rieux"
+    },
+    {
+      "name": "Shubham Mathur"
+    }
+  ],
+  "author": {
+    "name": "Shubham Mathur",
+    "email": "itseasy21@gmail.com"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/itseasy21/react-leaflet-draw-next/issues"
