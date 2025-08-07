@@ -17,7 +17,6 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
     if (ref.current && !featureGroupReady) {
       setFeatureGroupReady(true);
     }
-    console.log('[Hooks Example] FeatureGroup ref', ref.current);
     if (ref.current?.getLayers().length === 0 && geojson) {
       L.geoJSON(geojson).eachLayer((layer) => {
         if (
@@ -39,7 +38,6 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
 
   const handleChange = () => {
     const geo = ref.current?.toGeoJSON();
-    console.log(geo);
     if (geo?.type === 'FeatureCollection') {
       setGeojson(geo);
     }
