@@ -42,7 +42,7 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
 
   return (
     <FeatureGroup ref={ref}>
-      {ref.current && (
+      {ref.current && ref.current.leafletElement && (
         <EditControl
           position="topright"
           onEdited={handleChange}
@@ -56,7 +56,7 @@ export default function EditControlFC({ geojson, setGeojson }: Props) {
             marker: false,
             circlemarker: false,
           }}
-          featureGroup={ref.current}
+          featureGroup={ref.current.leafletElement}
         />
       )}
     </FeatureGroup>
