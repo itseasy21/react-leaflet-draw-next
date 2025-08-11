@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "leaflet",
+      "leaflet-draw"
+    ]
+  },
+  "include": [
+    "src",
+    "examples/hooks",
+    "examples/class"
+  ]
+}

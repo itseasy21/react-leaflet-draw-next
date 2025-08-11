@@ -11,7 +11,7 @@ import * as L from 'leaflet';
 /**
  * Props interface for the EditControl component
  */
-interface EditControlProps {
+interface EditControlProps<TLayer extends L.Layer = L.Layer> {
 	/** Callback fired when features are edited */
 	onEdited?: (v: DrawEvents.Edited) => void;
 	/** Callback fired when drawing starts */
@@ -37,13 +37,13 @@ interface EditControlProps {
 	/** Callback fired when deletion stops */
 	onDeleteStop?: (v: DrawEvents.DeleteStop) => void;
 	/** Callback fired when new features are created */
-	onCreated?: (v: DrawEvents.Created) => void;
+	onCreated?: (v: DrawEvents.Created & { layer: TLayer }) => void;
 	/** Callback fired when the control is mounted */
-	onMounted?: Function;
+	onMounted?: (ctrl: Control.Draw) => void;
 	/** Edit options for the control */
 	edit?: Control.EditOptions;
 	/** Draw options for different shape types */
-	draw: {
+	draw?: {
 		/** Polyline drawing options */
 		polyline?: DrawOptions.PolylineOptions | boolean;
 		/** Polygon drawing options */
@@ -58,9 +58,9 @@ interface EditControlProps {
 		circlemarker?: DrawOptions.CircleOptions | boolean;
 	};
 	/** Position of the control on the map */
-	position: ControlPosition;
+	position?: ControlPosition;
 	/** Feature group to manage drawn features */
-	featureGroup?: L.FeatureGroup;
+	featureGroup?: L.FeatureGroup<TLayer>;
 }
 
-export class EditControl extends React.Component<EditControlProps> {}
+export class EditControl<TLayer extends L.Layer = L.Layer> extends React.Component<EditControlProps<TLayer>> {}

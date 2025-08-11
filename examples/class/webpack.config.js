@@ -11,6 +11,11 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: "ts-loader",
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: "babel-loader",
@@ -35,4 +40,7 @@ module.exports = {
       directory: __dirname,
     },
   },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"]
+  }
 };
