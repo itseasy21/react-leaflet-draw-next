@@ -1,19 +1,32 @@
 /* eslint-disable */
 const webpack = require("webpack");
 const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
+const path = require("path");
 
 module.exports = {
   mode: "development",
   devtool: "source-map",
   entry: {
-    app: __dirname + "/index.js",
+    app: __dirname + "/index.tsx",
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js"],
+    alias: {
+      // Use a local tsconfig that doesn't constrain rootDir to src
+      // This avoids TS picking root tsconfig for the example app
+    }
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        loader: "babel-loader",
+        use: {
+          loader: "ts-loader",
+          options: {
+            configFile: path.resolve(__dirname, "tsconfig.json"),
+          },
+        },
       },
     ],
   },

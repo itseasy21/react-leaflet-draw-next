@@ -4,6 +4,9 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 module.exports = {
   mode: 'production',
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js']
+  },
   output: {
     library: 'ReactLeaflet',
     libraryTarget: 'umd'
@@ -44,8 +47,13 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(ts|tsx)$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      },
+      {
         test: /\.js$/,
-        use: "babel-loader"
+        use: 'babel-loader'
       }
     ]
   },
