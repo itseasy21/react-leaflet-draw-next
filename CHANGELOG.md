@@ -1,5 +1,11 @@
 # react-leaflet-draw-next
 
+## 1.0.3
+
+### Patch Changes
+
+- 9e4f78e: fix legacy deps warning
+
 ## 1.0.2
 
 ### Patch Changes
