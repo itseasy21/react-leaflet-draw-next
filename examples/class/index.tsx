@@ -9,10 +9,11 @@ const example = (
   </div>
 );
 
-function onChange(geojson) {
+function onChange(geojson: unknown) {
+  // eslint-disable-next-line no-console
   console.log('geojson changed', geojson);
 }
 
-createRoot(document.getElementById('app')).render(
-  example
-);
+createRoot(document.getElementById('app') as HTMLElement).render(example);
+
+
